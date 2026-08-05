@@ -1,0 +1,23 @@
+
+name: "jsoup"
+description: "jsoup is a Java library that makes it easy to work with real-world HTML and XML. It offers an easy-to-use API for URL fetching, data parsing, extraction, and manipulation using DOM API methods, CSS, and xpath selectors."
+third_party {
+  version: "jsoup-1.17.2"
+  license_type: NOTICE
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:jsoup:jsoup:1.17.2"
+  }
+  last_upgrade_date {
+    year: 2024
+    month: 5
+    day: 10
+  }
+  homepage: "https://github.com/jhy/jsoup"
+  identifier {
+    type: "Git"
+    value: "https://github.com/jhy/jsoup"
+    version: "9dec1baba5b3d0fa11268c95630b391f9de664ad"
+    closest_version: "jsoup-1.17.2"
+    primary_source: true
+  }
+}

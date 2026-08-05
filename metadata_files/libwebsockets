@@ -1,0 +1,22 @@
+# proto-file: tools/external_updater/metadata.proto
+# proto-message: MetaData
+
+name: "libwebsockets"
+description: "libwebsockets is a flexible, lightweight, pure C library for implementing modern web protocols easily with a tiny footprint, using a non-blocking event loop."
+third_party {
+  license_type: RESTRICTED
+  last_upgrade_date {
+    year: 2021
+    month: 12
+    day: 23
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/warmcat/libwebsockets"
+    version: "141ebf373ca0fed7b41eb960cdbd7ab1f29490dc"
+  }
+  security {
+    mitigated_security_patch: "CVE-2025-1866"
+    note: "Vulnerability is WIN32 specific and does not affect Android/Pixel products."
+  }
+}

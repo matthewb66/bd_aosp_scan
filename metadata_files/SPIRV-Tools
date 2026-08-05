@@ -1,0 +1,22 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/SPIRV-Tools
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "SPIRV-Tools"
+description: "The SPIR-V Tools project provides an API and commands for processing SPIR-V modules."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 2
+    day: 12
+  }
+  homepage: "https://github.com/KhronosGroup/SPIRV-Tools"
+  identifier {
+    type: "Git"
+    value: "https://github.com/KhronosGroup/SPIRV-Tools"
+    version: "fbe4f3ad913c44fe8700545f8ffe35d1382b7093"
+    closest_version: "vulkan-sdk-1.4.341.0"
+    primary_source: true
+  }
+}

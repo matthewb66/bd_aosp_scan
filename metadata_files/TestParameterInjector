@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/TestParameterInjector
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "TestParameterInjector"
+description: "JUnit runner for parameterized tests"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 13
+  }
+  homepage: "https://github.com/google/TestParameterInjector"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/TestParameterInjector"
+    version: "309659ddd85284c49d3942005d9f7ad64402f16b"
+  }
+}

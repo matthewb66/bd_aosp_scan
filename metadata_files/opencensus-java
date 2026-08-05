@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/opencensus-java
+# For more info, check https://cs.android.com/android/platform/superproject/+/main:tools/external_updater/README.md
+
+name: "opencensus-java"
+description: "A stats collection and distributed tracing framework"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2024
+    month: 5
+    day: 20
+  }
+  homepage: "https://opencensus.io"
+  identifier {
+    type: "Git"
+    value: "https://github.com/census-instrumentation/opencensus-java"
+    version: "baa68680b19040ff7739e314a2422a25cf41e27a"
+  }
+}

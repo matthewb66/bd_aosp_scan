@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/ktfmt
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "ktfmt"
+description: "A formatter for Kotlin code."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 19
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/facebookincubator/ktfmt.git"
+    version: "e83c7c9b253bf8aadd07a7ecab95ed67b2ee7521"
+    closest_version: "v0.59"
+  }
+}

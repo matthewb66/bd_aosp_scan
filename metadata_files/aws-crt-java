@@ -1,0 +1,17 @@
+name: "aws-crt-java"
+description:
+    "Java Bindings for the AWS Common Runtime"
+
+third_party {
+  homepage: "https://github.com/awslabs/aws-crt-java"
+  identifier {
+    type: "GIT"
+    value: "https://github.com/awslabs/aws-crt-java.git"
+    version: "v0.29.10"
+    primary_source: true
+  }
+  version: "v0.29.10"
+  last_upgrade_date { year: 2024 month: 2 day: 19 }
+  license_type: NOTICE
+}
+

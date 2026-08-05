@@ -1,0 +1,18 @@
+name: "pcollections"
+description: "A Persistent Java Collections Library"
+third_party {
+  version: "v5.0.0"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 10
+    day: 7
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/hrldcpr/pcollections.git"
+    version: "55e20cee6868efa93432cb1ba38de1ef315ff2b3"
+    closest_version: "v5.0.0"
+    primary_source: true
+  }
+}

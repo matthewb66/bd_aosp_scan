@@ -1,0 +1,8 @@
+name: "libmonet"
+description: ""
+third_party {
+  license_type: NOTICE
+  identifier {
+    type: "Piper"
+  }
+}

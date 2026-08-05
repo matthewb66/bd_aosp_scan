@@ -1,0 +1,24 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/apache-commons-io
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "apache-commons-io"
+description: "The Apache Commons IO library contains utility classes, stream implementations, file filters, file comparators, endian transformation classes, and much more."
+third_party {
+  license_type: NOTICE
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:apache:commons_io:2.20.0"
+  }
+  last_upgrade_date {
+    year: 2025
+    month: 7
+    day: 31
+  }
+  homepage: "https://commons.apache.org/proper/commons-io/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/apache/commons-io.git"
+    version: "c224bce839494ed651e5eba320b27c73ce8d804e"
+    closest_version: "rel/commons-io-2.20.0"
+  }
+}

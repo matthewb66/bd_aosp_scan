@@ -1,0 +1,18 @@
+name: "threetenbp"
+description:
+    "JSR-310 provides a new date and time library for Java SE 8. This project "
+    "is the backport to Java SE 6 and 7."
+
+third_party {
+  homepage: "https://github.com/ThreeTen/threetenbp"
+  identifier {
+    type: "Git"
+    value: "https://github.com/ThreeTen/threetenbp.git"
+    version: "87e0c99b68de00239febbceb351be03921a098d1"
+    closest_version: "v1.6.8"
+    primary_source: true
+  }
+  last_upgrade_date { year: 2024 month: 3 day: 20 }
+  license_type: NOTICE
+}
+

@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/accessibility-test-framework
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "accessibility-test-framework"
+description: "This library collects various accessibility-related checks on View objects as well as AccessibilityNodeInfo objects (which the Android framework derives from Views and sends to AccessibilityServices)."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 16
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/Accessibility-Test-Framework-for-Android"
+    version: "c65cab02b2a845c29c3da100d6adefd345a144e3"
+    primary_source: true
+  }
+}

@@ -1,0 +1,16 @@
+name: "aws-sdk-java-v2"
+description:
+    "AWS SDK for Java 2.0"
+
+third_party {
+  homepage: "https://github.com/aws/aws-sdk-java-v2"
+  identifier {
+    type: "Git"
+    value: "https://github.com/aws/aws-sdk-java-v2.git"
+    primary_source: true
+  }
+  version: "2.24.3"
+  last_upgrade_date { year: 2024 month: 2 day: 21 }
+  license_type: NOTICE
+}
+

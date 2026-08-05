@@ -1,0 +1,16 @@
+name: "volley"
+description: "Volley is an HTTP library that makes networking for Android apps easier and, most importantly, faster."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2017
+    month: 2
+    day: 24
+  }
+  homepage: "https://google.github.io/volley"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/volley"
+    version: "9424680a52bc7804e0c7f0f71c2f1ea282f10cdd"
+  }
+}

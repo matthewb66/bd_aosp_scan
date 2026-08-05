@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/shflags
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "shFlags"
+description: "shFlags is a port of the Google gflags library for Unix shell. The code is written in a way to be as portable as possible to work across a wide array of Unix variants. It is also tested with shUnit2 to maintain code quality."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2024
+    month: 8
+    day: 22
+  }
+  homepage: "https://github.com/kward/shflags/wiki"
+  identifier {
+    type: "Git"
+    value: "https://github.com/kward/shflags"
+    version: "96694d58ce92065fdd8f8761d930765cb9a8d066"
+  }
+}

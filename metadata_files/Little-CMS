@@ -1,0 +1,19 @@
+name: "Little-CMS"
+description: "Little CMS intends to be an OPEN SOURCE small-footprint color management engine, with special focus on accuracy and performance."
+third_party {
+  version: "lcms2.17"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 3
+    day: 31
+  }
+  homepage: "https://www.littlecms.com/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/mm2/Little-CMS/"
+    version: "5176347635785e53ee5cee92328f76fda766ecc6"
+    closest_version: "lcms2.17"
+    primary_source: true
+  }
+}

@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/arm-optimized-routines
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "ARM-software/optimized-routines"
+description: "Optimized implementations of various library functions for ARM architecture processors "
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 2
+    day: 26
+  }
+  homepage: "https://github.com/ARM-software/optimized-routines"
+  identifier {
+    type: "Git"
+    value: "https://github.com/ARM-software/optimized-routines.git"
+    version: "649ccc8411e7c4862965710f25c570d854a1483f"
+    closest_version: "v26.01"
+  }
+}

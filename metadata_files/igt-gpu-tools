@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/igt-gpu-tools
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "igt-gpu-tools"
+description: "IGT GPU Tools is a collection of tools for development and testing of Linux kernel DRM drivers."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 13
+  }
+  homepage: "https://gitlab.freedesktop.org/drm/igt-gpu-tools"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.freedesktop.org/drm/igt-gpu-tools"
+    version: "4b1051bb6520f81b51b88b8c173fcad281c8a7b2"
+    primary_source: true
+  }
+}

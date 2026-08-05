@@ -1,0 +1,16 @@
+name: "google-auth-library-java"
+description:
+    "Open source authentication client library for Java."
+
+third_party {
+  homepage: "https://github.com/googleapis/google-auth-library-java"
+  identifier {
+    type: "Git"
+    value: "https://github.com/googleapis/google-auth-library-java.git"
+    primary_source: true
+  }
+  version: "v1.23.0"
+  last_upgrade_date { year: 2024 month: 4 day: 5 }
+  license_type: NOTICE
+}
+

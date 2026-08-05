@@ -1,0 +1,17 @@
+name: "fsck_msdos"
+description: "This is the FreeBSD fsck_msdosfs."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 14
+  }
+  identifier {
+    type: "Archive"
+    value: "https://github.com/freebsd/freebsd-src/archive/refs/tags/release/14.2.0.tar.gz"
+  }
+  version: "release/14.2.0"
+
+
+}

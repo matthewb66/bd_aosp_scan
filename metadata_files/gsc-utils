@@ -1,0 +1,25 @@
+name: "gsc-utils"
+description:
+    "gsc-utils is a library that contains tools used to interact with the GSC "
+    "on ChromeOS devices. Of most significance is gsctool, which allows users "
+    "to disable FW write protect on their devices without the usage of "
+    "special hardware. This allows users to flash custom firmware on the "
+    "device, and is used extensively across all of ChromeOS to debug and "
+    "develop devices."
+
+third_party {
+  homepage: "https://chromium.googlesource.com/chromiumos/platform/ec/+/refs/heads/gsc_utils"
+  identifier {
+    type: "Git"
+    value: "https://chromium.googlesource.com/chromiumos/platform/ec/+/refs/heads/gsc_utils"
+    primary_source: true
+    version: "09c52130af246c5ba24b1ce9b78be439d0fd7ead"
+  }
+  license_type: NOTICE
+  version: "09c52130af246c5ba24b1ce9b78be439d0fd7ead"
+  last_upgrade_date {
+    year: 2024
+    month: 8
+    day: 21
+    }
+}

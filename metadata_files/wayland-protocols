@@ -1,0 +1,16 @@
+name: "wayland-protocols"
+description:
+    "external/wayland-protocols contains protocols that add functionality "
+    "not available in the Wayland core protocol. Such protocols either add "
+    "completely new functionality, or extend some other base protocol."
+    "The protocols are imported in GROUPS in child subdirectories, based on "
+    "the upstream source. METADATA files in the child subdirectories are "
+    "use to properly describe those sources."
+third_party {
+  # type: GROUP  # Not supported by Android. Ref go/thirdparty/metadata#type
+  url {
+    type: OTHER
+    value: "This is a GROUP. See child metadata files for proper metadata."
+  }
+  license_type: NOTICE
+}

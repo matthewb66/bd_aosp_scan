@@ -1,0 +1,24 @@
+
+name: "slf4j"
+description: "Simple Logging Facade for Java"
+third_party {
+  version: "v_2.0.12"
+  license_type: RESTRICTED
+  license_note: "would be NOTICE save for:\n   log4j-over-slf4j/compatibility/src/main/java/test/Log4j12Calls.java\n   log4j-over-slf4j/compatibility/src/main/java/test/Log4j13Calls.java"
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:qos:slf4j:2.0.12"
+  }
+  last_upgrade_date {
+    year: 2024
+    month: 2
+    day: 16
+  }
+  homepage: "https://github.com/qos-ch/slf4j"
+  identifier {
+    type: "Git"
+    value: "https://github.com/qos-ch/slf4j.git"
+    version: "955209464d517cd91186f6407a60feb202dc26b8"
+    closest_version: "v_2.0.12"
+    primary_source: true
+  }
+}

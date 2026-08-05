@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/mobly-snippet-lib
+# For more info, check https://cs.android.com/android/platform/superproject/+/main:tools/external_updater/README.md
+
+name: "mobly-snippet-lib"
+description: "Mobly Snippet Lib is a library for triggering device-side code from host-side Mobly tests."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2024
+    month: 4
+    day: 9
+  }
+  homepage: "https://github.com/google/mobly-snippet-lib"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/mobly-snippet-lib"
+    version: "3c705915cad43acd88a8815b3f3e3cf9455a60a4"
+  }
+}

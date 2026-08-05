@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/libogg
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "libogg"
+description: "Ogg media container reference implementation"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 7
+    day: 31
+  }
+  homepage: "https://gitlab.xiph.org/xiph/ogg"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.xiph.org/xiph/ogg.git"
+    version: "be05b13e98b048f0b5a0f5fa8ce514d56db5f822"
+    closest_version: "v1.3.6"
+  }
+}

@@ -1,0 +1,23 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/flatbuffers
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "flatbuffers"
+description: "FlatBuffers is an efficient cross platform serialization library for C++, C#, C, Go, Java, JavaScript, TypeScript, PHP, and Python."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 2
+    day: 4
+  }
+  homepage: "http://google.github.io/flatbuffers/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/flatbuffers.git"
+    version: "c49e81d6ec60d411f9d5cd9b748b8f86af154922"
+  }
+  security: {
+    tag: "NVD-CPE2.3:cpe:/a:google:flatbuffers:25.1.24"
+  }
+}

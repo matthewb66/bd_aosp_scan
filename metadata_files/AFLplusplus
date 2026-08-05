@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/AFLplusplus
+# For more info, check https://cs.android.com/android/platform/superproject/+/main:tools/external_updater/README.md
+
+name: "AFLplusplus"
+description: "AFLplusplus (american fuzzy lop plus plus) is a fuzzer"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2024
+    month: 3
+    day: 29
+  }
+  type: PACKAGE
+  homepage: "https://aflplus.plus"
+  identifier {
+    type: "Git"
+    value: "https://github.com/AFLplusplus/AFLplusplus"
+    version: "775861ea94d00672c9e868db329073afd699b994"
+  }
+}

@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/go-cmp
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "go-cmp"
+description: "This package is intended to be a more powerful and safer alternative to reflect.DeepEqual for comparing whether two values are semantically equal."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 22
+  }
+  homepage: "https://github.com/google/go-cmp"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/go-cmp.git"
+    version: "c3ad8435e7bef96af35732bc0789e5a2278c6d5f"
+    closest_version: "v0.6.0"
+  }
+}

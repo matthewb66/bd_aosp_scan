@@ -1,0 +1,237 @@
+name: "noto-fonts"
+description: "Noto is a global font collection for writing in all modern and ancient languages."
+
+third_party {
+  license_type: NOTICE
+
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Any fonts that have not been updated since the initial import from
+    # github.com/notofonts into github.com/google/fonts.
+    version: "a559a6efcfed22bf50219f52ecefcf20b9522408"
+  }
+
+  identifier {
+    type: "Git"
+    value: "https://github.com/googlefonts/noto-emoji/"
+    # NotoEmoji 2.051
+    version: "f3ae03f5e9b3b8516fa151f7168159ca1a3e7515"
+  }
+
+  identifier {
+    type: "Git"
+    value: "https://github.com/googlefonts/noto-emoji/"
+    # NotoEmoji 2.048
+    version: "b3e3051a088047d19fd4d49b1c3ac42fb8c3aaf8"
+  }
+
+  identifier {
+    type: "Git"
+    value: "https://github.com/googlefonts/noto-emoji/"
+    # NotoEmoji 2.047
+    version: "22e564626297b4df0a40570ad81d6c05cc7c38bd"
+  }
+
+  identifier {
+    type: "Git"
+    value: "https://github.com/googlefonts/noto-emoji/"
+    # NotoEmoji 2.042
+    version: "d79d23e6822e0f6e5731b114cbfb26b2a4e380da"
+  }
+
+  identifier {
+    type: "Git"
+    value: "https://github.com/googlefonts/noto-emoji/"
+    # NotoEmoji 2.034
+    version: "22e564626297b4df0a40570ad81d6c05cc7c38bd"
+  }
+
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Naskh Arabic: Version 2.019
+    version: "d4b52de8f8f426188faa2a20c332a66800c065c9"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Armenian: Version 2.008
+    version: "c38256a5574c1c7782460ddb065b5d406913fa5c"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Devanagari: Version 2.006
+    version: "03a182001fd7b1ccb3960a8faa8b616619c0d1a1"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Ethiopic: Version 2.102
+    version: "d4ca5e742a7810113d7d953c30e1ca0a1c7f68b2"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Gujarati: Version 2.106
+    version: "922dd2d553c7dbd07eb324de812017b5e1e9c94e"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Gurmukhi: Version 2.004
+    version: "b8e3a8e996e7f2dc78472f86390d88d3b96108a1"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Hebrew: Version 3.001
+    version: "4c1913251a6dd1ba34a6ef4b7a630178d01b88ff"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Khmer: Version 2.004
+    version: "5b052f6859a7dd8a93cd03094e4c795fc7bdef4a"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Lao: Version 2.003
+    version: "9bb6d45589fd96ae3c1afbb6936abeda596d9d0d"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Malayalam: Version 2.104
+    version: "26c4efb0f3075669cb2b823ed15bd6f057c8e857"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Myanmar: Version 2.107
+    version: "a05c54fe2ed151fbca77a7f74edddfa3106c36f9"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Oriya: Version 2.006
+    version: "de4fc8bac105a99297ebb906f0ad9b9ceaef3dc3"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Sinhala: Version 2.006
+    version: "414f89c0943a363e4e3caeaadd6e8c1b47fb0a35"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Tamil: Version 2.004
+    version: "6456110520981cbc97ffd876f85118201a25ffc1"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Telugu: Version 2.005
+    version: "1315de880f3dbb61bd10ca4c2bea853ea4fe24eb"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Sans Telugu: Version 2.004
+    version: "1dc6d958ef0c656b22f44400e33502f25c556206"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Armenian: Version 2.008
+    version: "ffa18373670835ffff5230dbf36003cdd8b7bb22"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Devanagari: Version 2.006
+    version: "64257354b92f0007a50fdcf5b4547bd96466dfeb"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Ethiopic: Version 2.102
+    version: "a36a8d012dffc94895e54532388025fb166eeaf3"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Gujarati: Version 2.106
+    version: "f4b148a45e5f26fae97002327638a111efa69da5"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Gurmukhi: Version 2.004
+    version: "03fde36c9c8ab8868f3bb9181ad74de773ffe2e9"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Hebrew: Version 2.004
+    version: "e15c6c27700f6171543fa80d772956492eef65e1"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Hentaigana: Version 1.000
+    version: "ae3761daae5232ea0b1362d3a30147a2d98c10a5"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Kannada: Version 2.005
+    version: "dae9a0a6e04b3119f4590c620d858d6c75959834"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Khmer: Version 2.004
+    version: "37dc86cd700672b64c3334e5f5a9b42ae162275a"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Lao: Version 2.003
+    version: "290538e78730e1e8683ef1b1742c618fa192ec5a"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Malayalam: Version 2.104
+    version: "845260a728daa02972a67d22cc26ccfe62e3ffa9"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Sinhala: Version 2.007
+    version: "c0610e8f340ed7b13ab690efe39ab11a01e3b21f"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Tamil: Version 2.003
+    version: "48ffa920b356be347a52766eb972055d562e9faa"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Telugu: Version 2.005
+    version: "050ae228464809f1372f99c1bb47c687c1707ef2"
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/fonts"
+    # Noto Serif Thai: Version 2.002
+    version: "264946c780bed9e83c1a8eead747ea9c4d7332f8"
+  }
+
+}

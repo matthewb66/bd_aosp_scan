@@ -1,0 +1,23 @@
+
+name: "ICU"
+description: "International Components for Unicode"
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://icu.unicode.org/"
+  }
+  url {
+    type: GIT
+    value: "https://github.com/unicode-org/icu"
+  }
+  version: "78"
+  license_type: RECIPROCAL
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:unicode:international_components_for_unicode:78.1"
+  }
+  last_upgrade_date {
+    year: 2025
+    month: 12
+    day: 24
+  }
+}

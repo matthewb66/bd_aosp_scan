@@ -1,0 +1,15 @@
+name: "libpciaccess"
+description:
+    "Generic PCI access library"
+
+third_party {
+  identifier {
+    type: "Git"
+    value: "https://gitlab.freedesktop.org/xorg/lib/libpciaccess"
+    primary_source: true
+    version: "f73f4ca720ccb2e9939545177b54f2be099e3b54"
+  }
+  version: "f73f4ca720ccb2e9939545177b54f2be099e3b54"
+  last_upgrade_date { year: 2025 month: 2 day: 10 }
+  license_type: NOTICE
+}

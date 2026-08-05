@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/mobly-bundled-snippets
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "mobly-bundled-snippets"
+description: "Mobly Bundled Snippets is a set of Snippets to allow Mobly tests to control Android devices by exposing a simplified version of the public Android API suitable for testing."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 12
+    day: 30
+  }
+  homepage: "https://github.com/google/mobly-bundled-snippets"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/mobly-bundled-snippets"
+    version: "8390be0632dc92a344a389d623de2e31dd9df7bb"
+  }
+}

@@ -1,0 +1,15 @@
+name: "keyattestation"
+description:
+    "Kotlin-based Android Key Attestation verification library"
+
+third_party {
+  license_type: NOTICE
+  identifier {
+    type: "Git"
+    value: "https://github.com/android/keyattestation"
+    primary_source: true
+    version: "3138da16c6c0bf5cc8c487c0623a6f95b8a26ffd"
+  }
+  version: "3138da16c6c0bf5cc8c487c0623a6f95b8a26ffd"
+  last_upgrade_date { year: 2025 month: 8 day: 19 }
+}

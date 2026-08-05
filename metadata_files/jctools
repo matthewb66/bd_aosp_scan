@@ -1,0 +1,15 @@
+name: "jctools"
+description:
+    "Java Concurrency Tools for the JVM."
+
+third_party {
+  identifier {
+    type: "Git"
+    value: "https://github.com/JCTools/JCTools/"
+    primary_source: true
+    version: "a17b56f09cc9ec7d773707578c89f3ca9c11f968"
+  }
+  version: "a17b56f09cc9ec7d773707578c89f3ca9c11f968"
+  last_upgrade_date { year: 2026 month: 2 day: 13 }
+  license_type: NOTICE
+}

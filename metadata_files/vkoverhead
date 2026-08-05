@@ -1,0 +1,16 @@
+name: "vkoverhead"
+description:
+    "vkoverhead is a tool for evaluating CPU-based overhead of Vulkan drivers. "
+    "It was inspired heavily by drawoverhead from piglit."
+
+third_party {
+  identifier {
+    type: "Git"
+    value: "https://github.com/zmike/vkoverhead"
+    primary_source: true
+    version: "87463657887ef3e95f1e9550aa4994582f51a21c"
+  }
+  version: "87463657887ef3e95f1e9550aa4994582f51a21c"
+  last_upgrade_date { year: 2025 month: 11 day: 6 }
+  license_type: NOTICE
+}

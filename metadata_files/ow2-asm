@@ -1,0 +1,17 @@
+name: "ow2-asm"
+description:
+    "Java bytecode manipulation and analysis framework"
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://asm.ow2.io/"
+  }
+  url {
+    type: GIT
+    value: "https://gitlab.ow2.org/asm/asm.git"
+  }
+  version: "9.8"
+  last_upgrade_date { year: 2025 month: 6 day: 6 }
+  license_type: NOTICE
+}

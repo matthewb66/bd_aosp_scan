@@ -1,0 +1,24 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/iperf3
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "iperf3"
+description: "iperf is a tool for active measurements of the maximum achievable bandwidth on IP networks."
+third_party {
+  license_type: NOTICE
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:iperf3_project:iperf3:3.11"
+  }
+  last_upgrade_date {
+    year: 2025
+    month: 3
+    day: 25
+  }
+  homepage: "https://iperf.fr/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/esnet/iperf.git"
+    version: "76bd67f6e90e239a7686202d2b1b595159826d24"
+    closest_version: "3.11"
+  }
+}

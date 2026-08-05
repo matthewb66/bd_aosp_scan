@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/yapf
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "yapf"
+description: "A formatter for Python files"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 14
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/yapf.git"
+    version: "5cb90cb4973511e03984f07913ad696d54b0ea00"
+    closest_version: "v0.43.0"
+  }
+}

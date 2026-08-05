@@ -1,0 +1,22 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/libjpeg-turbo
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "libjpeg-turbo"
+description: "libjpeg-turbo is a JPEG image codec."
+third_party {
+  license_type: NOTICE
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:libjpeg-turbo:libjpeg-turbo:2.1.0"
+  }
+  last_upgrade_date {
+    year: 2024
+    month: 9
+    day: 16
+  }
+  identifier {
+    type: "Git"
+    value: "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo"
+    version: "927aabfcd26897abb9776ecf2a6c38ea5bb52ab6"
+  }
+}

@@ -1,0 +1,20 @@
+name: "jetpack-camera-app"
+description:
+    "Jetpack Camera App is (will be) a fully functional camera app, focused on "
+    "features used by app developers, and built entirely with CameraX, Kotlin "
+    "and Jetpack Compose. It follows Android design and development best "
+    "practices and it's intended to be a useful reference for developers."
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://github.com/google/jetpack-camera-app"
+  }
+  url {
+    type: GIT
+    value: "https://github.com/google/jetpack-camera-app"
+  }
+  version: "3ae0900e248937bd7439b3d3c22360f2a7265153"
+  last_upgrade_date { year: 2023 month: 11 day: 17 }
+  license_type: NOTICE
+}

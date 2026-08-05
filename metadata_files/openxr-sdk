@@ -1,0 +1,19 @@
+name: "openxr-sdk"
+description: "Generated headers and sources for OpenXR loader."
+third_party {
+  version: "release-1.1.50"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 9
+    day: 23
+  }
+  homepage: "https://www.khronos.org/OpenXR"
+  identifier {
+    type: "Git"
+    value: "https://github.com/KhronosGroup/OpenXR-SDK/"
+    version: "57572a0e91890fe7183de25a62153aec955d64ba"
+    closest_version: "release-1.1.50"
+    primary_source: true
+  }
+}

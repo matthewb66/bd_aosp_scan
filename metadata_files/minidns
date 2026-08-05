@@ -1,0 +1,16 @@
+name: "minidns"
+description:
+    "An embeddable DNS client library for Java and Android with minimal dependencies. "
+    "Dual-licensed under LGPL-2.1-or-later, Apache-2.0, and WTFPL. "
+    "Using the least restrictive license (Apache-2.0) per go/thirdpartylicenses#same. "
+    "See LICENCE_APACHE file for the applicable license terms and conditions."
+
+third_party {
+  url {
+    type: GIT
+    value: "https://github.com/MiniDNS/minidns"
+  }
+  version: "1.1.1"
+  last_upgrade_date { year: 2025 month: 4 day: 30 }
+  license_type: NOTICE
+}

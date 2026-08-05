@@ -1,0 +1,19 @@
+name: "cairo"
+description: "Cairo is a 2D graphics library with support for multiple output devices."
+third_party {
+  version: "1.18.4"
+  license_type: RESTRICTED
+  last_upgrade_date {
+    year: 2025
+    month: 4
+    day: 28
+  }
+  homepage: "https://gitlab.freedesktop.org/cairo/cairo"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.freedesktop.org/cairo/cairo"
+    version: "4541e0cd3a751b85e52e2a83d02ac6145a5efa85"
+    closest_version: "1.18.4"
+    primary_source: true
+  }
+}

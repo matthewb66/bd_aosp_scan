@@ -1,0 +1,17 @@
+name: "animal-sniffer"
+description:
+    "The Animal Sniffer Plugin is used to build signatures of APIs and to check "
+    "your classes against previously generated signatures."
+
+third_party {
+homepage: "https://www.mojohaus.org/animal-sniffer/animal-sniffer-maven-plugin/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/mojohaus/animal-sniffer"
+    primary_source: true
+    version: "5adf3aad06658c44de48ba2fddf9819685230e5f"
+  }
+  version: "5adf3aad06658c44de48ba2fddf9819685230e5f"
+  last_upgrade_date { year: 2026 month: 2 day: 13 }
+  license_type: NOTICE
+}

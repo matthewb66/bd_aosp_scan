@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/OpenCL-CTS
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "OpenCL-CTS"
+description: "OpenCL Conformance Tests"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 2
+    day: 12
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/KhronosGroup/OpenCL-CTS.git"
+    version: "67fbbe4ee24a15eed6d8875b2540da31af515495"
+    closest_version: "v2025-12-09-03"
+  }
+}

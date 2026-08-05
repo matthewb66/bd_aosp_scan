@@ -1,0 +1,19 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/setfilters
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "setfilters"
+description: "A library which contains a collection of space efficient set filters data structures such as cuckoo filter."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 4
+    day: 25
+  }
+  identifier {
+    type: "Archive"
+    value: "https://github.com/google/setfilters/archive/cb6a484fd6766c01743c7acd73971309ad3218f2.zip"
+    version: "cb6a484fd6766c01743c7acd73971309ad3218f2"
+  }
+}

@@ -1,0 +1,14 @@
+name: "smack"
+description:
+    "Smack is a library for communicating with XMPP servers to enable real-time communication, "
+    "including instant messaging and group chat."
+
+third_party {
+  url {
+    type: GIT
+    value: "https://github.com/igniterealtime/Smack"
+  }
+  version: "4.4.8"
+  last_upgrade_date { year: 2025 month: 5 day: 21 }
+  license_type: NOTICE
+}

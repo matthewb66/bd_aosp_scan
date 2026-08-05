@@ -1,0 +1,16 @@
+name: "ml_dtypes"
+description:
+    "ml_dtypes is a stand-alone implementation of several NumPy dtype "
+    "extensions used in machine learning libraries"
+
+third_party {
+homepage: "https://github.com/jax-ml/ml_dtypes"
+  identifier {
+    type: "Git"
+    value: "https://github.com/jax-ml/ml_dtypes.git"
+    primary_source: true
+    version: "0.5.2"
+  }
+  last_upgrade_date { year: 2025 month: 2 day: 28 }
+  license_type: NOTICE
+}

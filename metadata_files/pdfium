@@ -1,0 +1,5 @@
+name: "PDFium"
+description: ""
+third_party {
+    license_type: NOTICE
+}

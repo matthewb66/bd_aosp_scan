@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/google-java-format
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "google-java-format"
+description: "Reformats Java source code to comply with Google Java Style."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 2
+    day: 17
+  }
+  homepage: "https://github.com/google/google-java-format"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/google-java-format"
+    version: "f1f5c67db13ce6ee11572bc3b39a7e23c178577d"
+  }
+}

@@ -1,0 +1,17 @@
+
+
+
+
+name: "Android Onboarding"
+description:
+  "AOSP Libraries for use by all components which contribute to the"
+  "Android Onboarding Flow."
+third_party {
+  type: PACKAGE
+  license_type: NOTICE
+  identifier {
+    type: "Piper"
+    omission_reason: "Exported by google"
+    primary_source: true
+  }
+}

@@ -1,0 +1,19 @@
+name: "Hafnium"
+description: "Hafnium is the Secure Partition Manager(SPM) reference implementation, following the Arm\'s Firmware Framework specification."
+third_party {
+  version: "v2.12"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 13
+  }
+  homepage: "https://hafnium.readthedocs.io/en/latest"
+  identifier {
+    type: "Git"
+    value: "https://git.trustedfirmware.org/hafnium/hafnium.git"
+    version: "2cf2ca7c4b81ab18e9cd363d9a5c8288e2a94fda"
+    closest_version: "v2.12"
+    primary_source: true
+  }
+}

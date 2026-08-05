@@ -1,0 +1,17 @@
+name: "mpdecimal"
+description:
+    "mpdecimal is a package for correctly-rounded arbitrary precision decimal "
+    "floating point arithmetic."
+
+third_party {
+homepage: "https://www.bytereef.org/mpdecimal/"
+  identifier {
+    type: "Archive"
+    value: "https://www.bytereef.org/software/mpdecimal/releases/mpdecimal-4.0.0.tar.gz"
+    primary_source: true
+    version: "4.0.0"
+  }
+  version: "4.0.0"
+  last_upgrade_date { year: 2025 month: 1 day: 17 }
+  license_type: NOTICE
+}

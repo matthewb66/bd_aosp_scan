@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/javassist
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "javassist"
+description: "Java bytecode engineering toolkit"
+third_party {
+  license_type: NOTICE
+  license_note: "The project can be licensed under one of MPL, LGPL or AL, and Apache 2.0 is a \"notice\" license."
+  last_upgrade_date {
+    year: 2025
+    month: 7
+    day: 15
+  }
+  homepage: "https://www.javassist.org/"
+  identifier {
+    type: "Archive"
+    value: "https://github.com/jboss-javassist/javassist/archive/rel_3_30_2_ga.tar.gz"
+    version: "rel_3_30_2_ga"
+  }
+}

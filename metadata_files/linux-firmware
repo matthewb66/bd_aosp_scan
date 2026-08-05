@@ -1,0 +1,8 @@
+name: "linux-firmware"
+description:
+    "external/linux-firmware contains binaries imported from the upstream "
+    "linux-firmware repository."
+
+third_party {
+  type: GROUP
+}

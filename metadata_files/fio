@@ -1,0 +1,18 @@
+name: "fio"
+description: "Flexible IO Tester"
+third_party {
+  version: "fio-3.38"
+  license_type: RESTRICTED
+  last_upgrade_date {
+    year: 2025
+    month: 6
+    day: 26
+  }
+  identifier {
+    type: "Git"
+    value: "https://git.kernel.org/pub/scm/linux/kernel/git/axboe/fio.git"
+    version: "5af800ca20ea18193d2262a8191ae32e14d623f8"
+    closest_version: "fio-3.38"
+    primary_source: true
+  }
+}

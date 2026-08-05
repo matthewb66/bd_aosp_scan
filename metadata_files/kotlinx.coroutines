@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/kotlinx.coroutines
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "kotlinx.coroutines"
+description: "Library support for Kotlin coroutines"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 3
+    day: 3
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/Kotlin/kotlinx.coroutines"
+    version: "ee92d16c4b48345648dcd8bb15f11ab9c3747f67"
+    closest_version: "1.10.1"
+  }
+}

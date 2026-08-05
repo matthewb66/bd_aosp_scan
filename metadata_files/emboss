@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/emboss
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "emboss"
+description: "Emboss is a tool for generating code that reads and writes binary data structures. It is designed to help write code that communicates with hardware devices such as GPS receivers, LIDAR scanners, or actuators."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 10
+    day: 23
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/emboss"
+    version: "f595908cba6f366746d6834a2e885868d1a836cd"
+    closest_version: "v2025.1003.000719"
+    primary_source: true
+  }
+}

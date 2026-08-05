@@ -1,0 +1,19 @@
+name: "JSpecify"
+description:
+    "An artifact of fully-specified annotations to power static-analysis "
+    "checks, beginning with nullness analysis."
+
+third_party {
+homepage: "https://jspecify.dev/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/jspecify/jspecify.git"
+    primary_source: true
+    version: "5bf4ae46059cc4821879ecae10522b77dd16c59b"
+  }
+  # We use the parent of v1.0.0 because v1.0.0 is not part of any branch,
+  # so it's not possible to import it into Gerrit
+  version: "5bf4ae46059cc4821879ecae10522b77dd16c59b"
+  last_upgrade_date { year: 2024 month: 10 day: 7 }
+  license_type: NOTICE
+}
