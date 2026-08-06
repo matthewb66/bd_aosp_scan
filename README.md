@@ -45,6 +45,9 @@ Environment variables are used as defaults when the corresponding argument is no
 --output, -o PATH        Output BDIO file path (default: aosp-sbom.bdio)
 --subfolder PATH         Only process repos/paths within this subfolder
                          (e.g. external)
+--exclude-subfolders LIST  Comma-separated list of top-level subfolders to
+                         exclude (e.g. external,prebuilts). If 'external'
+                         is excluded, --sigscan-external is ignored.
 --list-packages          List package identifiers and exit without generating BDIO
 --sigscan-external       Run signature scan on external repos that could not be
                          resolved to a GitHub component
@@ -108,6 +111,33 @@ python3 generate_bdio.py \
 Signature scanning requires `--aosp-root`, `--bd-api-token`, and `--bd-url`.
 
 Repos are scanned in place under `<aosp-root>/external/` in batches of up to 4 GB. A `.bdignore` file is temporarily written to the `external/` directory to exclude all folders except those in the current batch. Each batch produces a uniquely named codelocation on the Black Duck server (suffixed with the batch number).
+
+### Excluding Subfolders
+
+To exclude specific top-level subfolders from the BDIO, use `--exclude-subfolders` with a comma-separated list:
+
+```bash
+python3 generate_bdio.py \
+    --module-info out/target/product/generic_arm64/module-info.json \
+    --repo-list repo-list.txt \
+    --android-version android-16.0.0_r4 \
+    --bd_project "AOSP" \
+    --bd_version "16.0.0_r4" \
+    --aosp-root /path/to/aosp \
+    --exclude-subfolders prebuilts,tools
+```
+
+If `external` is included in the exclusion list, all external repo processing is skipped and `--sigscan-external` is ignored if specified:
+
+```bash
+python3 generate_bdio.py \
+    --module-info out/target/product/generic_arm64/module-info.json \
+    --repo-list repo-list.txt \
+    --android-version android-16.0.0_r4 \
+    --bd_project "AOSP" \
+    --bd_version "16.0.0_r4" \
+    --exclude-subfolders external,prebuilts
+```
 
 ### List Packages Only
 
