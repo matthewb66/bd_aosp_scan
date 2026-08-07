@@ -105,7 +105,10 @@ def _extract_version_from_archive_url(url):
 
 
 def parse_metadata(metadata_path):
-    result = {"name": None, "version": None, "cpe": None, "github_url": None}
+    result = {"name": None, "version": None, "cpe": None, "github_url": None,
+              "closest_version": None, "top_version": None,
+              "license_type": None, "all_versions": [],
+              "last_upgrade_date": None}
 
     try:
         with open(metadata_path) as f:
@@ -117,6 +120,10 @@ def parse_metadata(metadata_path):
     name_match = re.search(r'^name:\s*"([^"]*)"', content, re.MULTILINE)
     if name_match:
         result["name"] = name_match.group(1)
+
+    license_match = re.search(r'license_type:\s*(\w+)', content)
+    if license_match:
+        result["license_type"] = license_match.group(1)
 
     cpe_match = re.search(
         r'identifier\s*:?\s*\{[^}]*type:\s*"?cpe"?[^}]*value:\s*"([^"]*)"',
@@ -206,10 +213,16 @@ def parse_metadata(metadata_path):
     )
     top_version = ver_match.group(1) if ver_match else None
 
-    versions = []
+    closest_versions = []
     for b in identifier_blocks:
         if b["closest_version"]:
-            versions.append(b["closest_version"])
+            closest_versions.append(b["closest_version"])
+    if closest_versions:
+        result["closest_version"] = closest_versions[0]
+
+    result["top_version"] = top_version
+
+    versions = list(closest_versions)
     if top_version:
         versions.append(top_version)
     for b in identifier_blocks:
@@ -220,6 +233,8 @@ def parse_metadata(metadata_path):
             v = _extract_version_from_archive_url(b.get("value"))
             if v:
                 versions.append(v)
+
+    result["all_versions"] = versions
 
     best = None
     for v in versions:
@@ -232,6 +247,14 @@ def parse_metadata(metadata_path):
                 best = v
                 break
     result["version"] = best
+
+    date_match = re.search(
+        r'last_upgrade_date\s*\{[^}]*year:\s*(\d+)[^}]*month:\s*(\d+)'
+        r'[^}]*day:\s*(\d+)', content, re.DOTALL)
+    if date_match:
+        result["last_upgrade_date"] = (
+            f"{date_match.group(1)}-{int(date_match.group(2)):02d}"
+            f"-{int(date_match.group(3)):02d}")
 
     log.debug("METADATA %s: name=%s version=%s cpe=%s github_url=%s",
               metadata_path, result["name"], result["version"],
