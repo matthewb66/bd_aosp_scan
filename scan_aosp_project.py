@@ -19,10 +19,7 @@ from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_rep
 from bd_api import (
     bd_authenticate,
     bd_delete_codelocation,
-    bd_find_or_create_project,
-    bd_find_or_create_version,
     bd_get_import_events,
-    bd_map_codelocation,
     bd_poll_scan,
     bd_upload_spdx,
     _get_codeloc_href,
@@ -100,7 +97,9 @@ def _upload_and_map(packages, bearer, bd_url, bd_project, bd_version,
 
     status, scan_url = bd_upload_spdx(bearer, sbom_json, bd_url,
                                       autocreate=autocreate,
-                                      trust_cert=trust_cert)
+                                      trust_cert=trust_cert,
+                                      project_name=bd_project,
+                                      version_name=bd_version)
     print(f"Upload HTTP {status}, polling scan...", file=sys.stderr)
 
     summary = bd_poll_scan(bearer, scan_url, bd_url, trust_cert=trust_cert)
@@ -116,16 +115,6 @@ def _upload_and_map(packages, bearer, bd_url, bd_project, bd_version,
               if e["event"] == "COMPONENT_MAPPING_FAILED"]
     print(f"Results: {len(matched)} matched, {len(failed)} failed",
           file=sys.stderr)
-
-    codeloc_href = _get_codeloc_href(summary)
-    if codeloc_href:
-        project_href = bd_find_or_create_project(
-            bearer, bd_project, bd_url, trust_cert)
-        version_href = bd_find_or_create_version(
-            bearer, project_href, bd_version, bd_url, trust_cert)
-        bd_map_codelocation(bearer, codeloc_href, version_href, trust_cert)
-        print(f"Mapped codelocation to {bd_project}/{bd_version}",
-              file=sys.stderr)
 
     return events
 
@@ -202,7 +191,9 @@ def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
           f"({len(all_packages)} packages) ===", file=sys.stderr)
     status, scan_url = bd_upload_spdx(bearer, sbom_json, bd_url,
                                       autocreate=False,
-                                      trust_cert=trust_cert)
+                                      trust_cert=trust_cert,
+                                      project_name=bd_project,
+                                      version_name=bd_version)
     print(f"Upload HTTP {status}, polling scan...", file=sys.stderr)
 
     summary = bd_poll_scan(bearer, scan_url, bd_url, trust_cert=trust_cert)

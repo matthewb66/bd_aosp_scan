@@ -306,7 +306,7 @@ def bd_cpe_lookup(bearer, pkg_name, pkg_version, cpe_from_metadata,
 # ---------------------------------------------------------------------------
 
 def bd_upload_spdx(bearer, sbom_content, bd_url, autocreate=False,
-                   trust_cert=False):
+                   trust_cert=False, project_name=None, version_name=None):
     boundary = uuid.uuid4().hex
     parts = []
     sbom_bytes = sbom_content.encode("utf-8") if isinstance(
@@ -320,6 +320,20 @@ def bd_upload_spdx(bearer, sbom_content, bd_url, autocreate=False,
     )
     parts.append(sbom_bytes)
     parts.append(b"\r\n")
+
+    if project_name:
+        parts.append(
+            f"--{boundary}\r\n"
+            f"Content-Disposition: form-data; name=\"projectName\"\r\n\r\n"
+            f"{project_name}\r\n"
+        )
+
+    if version_name:
+        parts.append(
+            f"--{boundary}\r\n"
+            f"Content-Disposition: form-data; name=\"versionName\"\r\n\r\n"
+            f"{version_name}\r\n"
+        )
 
     if autocreate:
         parts.append(
