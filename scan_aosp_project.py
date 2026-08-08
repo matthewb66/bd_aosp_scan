@@ -365,12 +365,15 @@ def main():
     print(f"Collected {len(platform_packages)} platform repo packages",
           file=sys.stderr)
 
+    # Collect and classify external packages
+    packages_by_tier = {
+        "github_purl": [], "cpe_lookup": [],
+        "github_commit": [], "custom": [],
+    }
+
     if not scan_modes:
         print("External scanning disabled (mode NONE)", file=sys.stderr)
-        return
-
-    # Collect and classify external packages
-    if args.metadata_dir:
+    elif args.metadata_dir:
         packages_by_tier = collect_from_metadata_dir(
             repo_matches, args.metadata_dir, args.android_version)
     else:
@@ -383,10 +386,12 @@ def main():
             packages_by_tier, github_token=args.github_token)
 
     # Summary
-    total = sum(len(v) for v in packages_by_tier.values())
-    print(f"\nClassification of {total} external packages:", file=sys.stderr)
+    total_external = sum(len(v) for v in packages_by_tier.values())
+    print(f"\nClassification: {len(platform_packages)} platform, "
+          f"{total_external} external packages", file=sys.stderr)
     for tier, entries in packages_by_tier.items():
-        print(f"  {tier}: {len(entries)}", file=sys.stderr)
+        if entries:
+            print(f"  {tier}: {len(entries)}", file=sys.stderr)
 
     if args.list_packages:
         print("\n--- Package Classification ---")
