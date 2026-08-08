@@ -85,41 +85,121 @@ def parse_scan_modes(raw):
     return frozenset(modes)
 
 
+def _upload_and_map(packages, bearer, bd_url, bd_project, bd_version,
+                    trust_cert, autocreate, doc_suffix, label):
+    """Upload an SPDX SBOM and map the codelocation to the project version."""
+    doc_namespace = (f"https://aosp.spdx.org/sbom/"
+                     f"{bd_project}-{bd_version}-{doc_suffix}")
+    doc = build_spdx_document(
+        packages, f"{bd_project}-{bd_version}-{doc_suffix}", doc_namespace)
+    sbom_json = json.dumps(doc, indent=2)
+
+    ac_label = "autocreate=on" if autocreate else "autocreate=off"
+    print(f"\n=== {label} ({len(packages)} packages, {ac_label}) ===",
+          file=sys.stderr)
+
+    status, scan_url = bd_upload_spdx(bearer, sbom_json, bd_url,
+                                      autocreate=autocreate,
+                                      trust_cert=trust_cert)
+    print(f"Upload HTTP {status}, polling scan...", file=sys.stderr)
+
+    summary = bd_poll_scan(bearer, scan_url, bd_url, trust_cert=trust_cert)
+    scan_state = summary.get("scanState")
+    match_count = summary.get("matchCount", 0)
+    print(f"Scan state: {scan_state}, matches: {match_count}", file=sys.stderr)
+
+    events = bd_get_import_events(bearer, scan_url, bd_url,
+                                  trust_cert=trust_cert)
+    matched = [e for e in events
+               if e["event"] == "COMPONENT_MAPPING_SUCCEEDED"]
+    failed = [e for e in events
+              if e["event"] == "COMPONENT_MAPPING_FAILED"]
+    print(f"Results: {len(matched)} matched, {len(failed)} failed",
+          file=sys.stderr)
+
+    codeloc_href = _get_codeloc_href(summary)
+    if codeloc_href:
+        project_href = bd_find_or_create_project(
+            bearer, bd_project, bd_url, trust_cert)
+        version_href = bd_find_or_create_version(
+            bearer, project_href, bd_version, bd_url, trust_cert)
+        bd_map_codelocation(bearer, codeloc_href, version_href, trust_cert)
+        print(f"Mapped codelocation to {bd_project}/{bd_version}",
+              file=sys.stderr)
+
+    return events
+
+
+def run_platform_upload(platform_packages, bearer, bd_url, bd_project,
+                        bd_version, trust_cert, skip_upload=False,
+                        autocreate=True):
+    """Upload platform repo packages as a single SPDX SBOM (no exploratory pass)."""
+    if not platform_packages:
+        print("No platform packages to upload", file=sys.stderr)
+        return
+
+    if skip_upload:
+        doc_namespace = (f"https://aosp.spdx.org/sbom/"
+                         f"{bd_project}-{bd_version}-platform")
+        doc = build_spdx_document(
+            platform_packages, f"{bd_project}-{bd_version}-platform",
+            doc_namespace)
+        output_path = f"{bd_project}-{bd_version}-platform-sbom.spdx.json"
+        with open(output_path, "w") as f:
+            json.dump(doc, f, indent=2)
+        print(f"Platform SBOM written to {output_path} (upload skipped)",
+              file=sys.stderr)
+        return
+
+    events = _upload_and_map(
+        platform_packages, bearer, bd_url, bd_project, bd_version,
+        trust_cert, autocreate=autocreate, doc_suffix="platform",
+        label="Platform upload")
+
+    matched = sum(1 for e in events
+                  if e["event"] == "COMPONENT_MAPPING_SUCCEEDED")
+    print(f"\nPlatform: {matched}/{len(platform_packages)} matched",
+          file=sys.stderr)
+
+
 def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
                         bd_version, trust_cert, skip_upload=False,
-                        autocreate=True, platform_packages=None):
-    """Execute the 2-pass upload workflow.
+                        autocreate=True):
+    """Execute the 2-pass upload workflow for external packages.
 
-    Pass 1: Upload with tiers 1-3 (no autocreate) to check what matches.
-    Pass 2: Upload with autocreate (if *autocreate* is True) to create
-    custom components for unmatched packages.
+    Pass 1: Upload without autocreate to check what matches.
+    Pass 2: Upload with autocreate (if enabled) to create custom components.
     """
-    all_packages = list(platform_packages or [])
+    all_packages = []
     for tier_entries in packages_by_tier.values():
         for entry in tier_entries:
             all_packages.append(entry["package"])
 
     if not all_packages:
-        print("No packages to upload", file=sys.stderr)
+        print("No external packages to upload", file=sys.stderr)
         return
 
-    doc_namespace = (f"https://aosp.spdx.org/sbom/"
-                     f"{bd_project}-{bd_version}-{uuid.uuid4().hex[:8]}")
+    if skip_upload:
+        doc_namespace = (f"https://aosp.spdx.org/sbom/"
+                         f"{bd_project}-{bd_version}-external")
+        doc = build_spdx_document(
+            all_packages, f"{bd_project}-{bd_version}-external", doc_namespace)
+        output_path = f"{bd_project}-{bd_version}-external-sbom.spdx.json"
+        with open(output_path, "w") as f:
+            json.dump(doc, f, indent=2)
+        print(f"External SBOM written to {output_path} (upload skipped)",
+              file=sys.stderr)
+        return
 
     # --- Pass 1: exploratory upload ---
-    print(f"\n=== Pass 1: Exploratory upload ({len(all_packages)} packages) ===",
-          file=sys.stderr)
+    doc_namespace = (f"https://aosp.spdx.org/sbom/"
+                     f"{bd_project}-{bd_version}-{uuid.uuid4().hex[:8]}")
     doc = build_spdx_document(all_packages, f"{bd_project}-{bd_version}",
                               doc_namespace)
     sbom_json = json.dumps(doc, indent=2)
 
-    if skip_upload:
-        output_path = f"{bd_project}-{bd_version}-sbom.spdx.json"
-        with open(output_path, "w") as f:
-            f.write(sbom_json)
-        print(f"SBOM written to {output_path} (upload skipped)", file=sys.stderr)
-        return
-
+    print(f"\n=== External Pass 1: Exploratory upload "
+          f"({len(all_packages)} packages) ===", file=sys.stderr)
     status, scan_url = bd_upload_spdx(bearer, sbom_json, bd_url,
                                       autocreate=False,
                                       trust_cert=trust_cert)
@@ -145,56 +225,17 @@ def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
         bd_delete_codelocation(bearer, codeloc_href, trust_cert)
         print("Cleaned up exploratory codelocation", file=sys.stderr)
 
-    # --- Pass 2: final upload with autocreate ---
-    all_packages_final = list(platform_packages or [])
-    for tier_entries in packages_by_tier.values():
-        for entry in tier_entries:
-            all_packages_final.append(entry["package"])
-
-    doc_namespace_final = (f"https://aosp.spdx.org/sbom/"
-                           f"{bd_project}-{bd_version}-final")
-    doc_final = build_spdx_document(
-        all_packages_final, f"{bd_project}-{bd_version}", doc_namespace_final)
-    sbom_final = json.dumps(doc_final, indent=2)
-
-    ac_label = "with autocreate" if autocreate else "without autocreate"
-    print(f"\n=== Pass 2: Final upload {ac_label} ===", file=sys.stderr)
-    status2, scan_url2 = bd_upload_spdx(bearer, sbom_final, bd_url,
-                                        autocreate=autocreate,
-                                        trust_cert=trust_cert)
-    print(f"Upload HTTP {status2}, polling scan...", file=sys.stderr)
-
-    summary2 = bd_poll_scan(bearer, scan_url2, bd_url, trust_cert=trust_cert)
-    scan_state2 = summary2.get("scanState")
-    match_count2 = summary2.get("matchCount", 0)
-    print(f"Scan state: {scan_state2}, matches: {match_count2}", file=sys.stderr)
-
-    events2 = bd_get_import_events(bearer, scan_url2, bd_url,
-                                   trust_cert=trust_cert)
-    matched2 = [e for e in events2
-                if e["event"] == "COMPONENT_MAPPING_SUCCEEDED"]
-    failed2 = [e for e in events2
-               if e["event"] == "COMPONENT_MAPPING_FAILED"]
-
-    print(f"Pass 2 results: {len(matched2)} matched, {len(failed2)} failed",
-          file=sys.stderr)
-
-    codeloc_href2 = _get_codeloc_href(summary2)
-    if codeloc_href2:
-        project_href = bd_find_or_create_project(
-            bearer, bd_project, bd_url, trust_cert)
-        version_href = bd_find_or_create_version(
-            bearer, project_href, bd_version, bd_url, trust_cert)
-        bd_map_codelocation(bearer, codeloc_href2, version_href, trust_cert)
-        print(f"Mapped codelocation to {bd_project}/{bd_version}",
-              file=sys.stderr)
+    # --- Pass 2: final upload ---
+    events2 = _upload_and_map(
+        all_packages, bearer, bd_url, bd_project, bd_version,
+        trust_cert, autocreate=autocreate, doc_suffix="external",
+        label="External Pass 2: Final upload")
 
     # --- Final report ---
-    print_report(packages_by_tier, events2,
-                 platform_count=len(platform_packages or []))
+    print_report(packages_by_tier, events2)
 
 
-def print_report(packages_by_tier, final_events, platform_count=0):
+def print_report(packages_by_tier, final_events):
     event_map = {}
     for e in final_events:
         event_map[e.get("importComponentName", "")] = e
@@ -207,12 +248,8 @@ def print_report(packages_by_tier, final_events, platform_count=0):
     }
 
     print("\n" + "=" * 70)
-    print("SBOM MATCHING REPORT")
+    print("EXTERNAL PACKAGE MATCHING REPORT")
     print("=" * 70)
-
-    if platform_count:
-        print(f"\n--- Platform Repos ({platform_count} packages) ---")
-        print(f"  Included as pkg:android/platform-* PURLs")
 
     total = 0
     total_matched = 0
@@ -331,6 +368,11 @@ def main():
              "AOSP_REPOS,SIG_SCAN,CUSTOM_COMPS. Presets: ALL, DEFAULT, NONE. "
              "Default: DEFAULT (GITHUB_REPOS,KB_LOOKUP,CPE_LOOKUP,"
              "CUSTOM_COMPS)",
+    )
+    parser.add_argument(
+        "--no-custom-components", action="store_true",
+        help="Disable autocreate for all uploads (platform and external). "
+             "Overrides CUSTOM_COMPS scan mode.",
     )
     parser.add_argument(
         "--debug", action="store_true",
@@ -487,13 +529,23 @@ def main():
         else:
             print("SIG_SCAN: no unmatched repos to scan", file=sys.stderr)
 
-    # Run upload workflow
+    autocreate = not args.no_custom_components
+
+    # Upload platform repos (single pass)
+    run_platform_upload(
+        platform_packages, bearer, args.bd_url,
+        args.bd_project, args.bd_version, args.bd_trust_cert,
+        skip_upload=args.skip_upload,
+        autocreate=autocreate,
+    )
+
+    # Upload external packages (2-pass exploratory workflow)
+    ext_autocreate = ("CUSTOM_COMPS" in scan_modes) and autocreate
     run_upload_workflow(
         packages_by_tier, bearer, args.bd_url,
         args.bd_project, args.bd_version, args.bd_trust_cert,
         skip_upload=args.skip_upload,
-        autocreate="CUSTOM_COMPS" in scan_modes,
-        platform_packages=platform_packages,
+        autocreate=ext_autocreate,
     )
 
 
