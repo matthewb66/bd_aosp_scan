@@ -1,0 +1,24 @@
+name: "ptyprocess"
+description:
+    "Run a subprocess in a pseudo terminal"
+  ""
+  "Launch a subprocess in a pseudo terminal (pty), and interact with both the"
+  "process and its pty."
+  ""
+  "Sometimes, piping stdin and stdout is not enough. There might be a "
+  "password prompt that doesn’t read from stdin, output that changes when "
+  "it’s going to a pipe rather than a terminal, or curses-style interfaces "
+  "that rely on a terminal. If you need to automate these things, running the"
+  "process in a pseudo terminal (pty) is the answer."
+third_party {
+homepage: "https://github.com/pexpect/ptyprocess/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/pexpect/ptyprocess/"
+    primary_source: true
+    version: "1067dbdaf5cc3ab4786ae355aba7b9512a798734"
+  }
+  version: "1067dbdaf5cc3ab4786ae355aba7b9512a798734"
+  last_upgrade_date { year: 2025 month: 5 day: 23 }
+  license_type: NOTICE
+}

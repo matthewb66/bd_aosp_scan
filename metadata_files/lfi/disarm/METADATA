@@ -1,0 +1,18 @@
+name: "disarm"
+description:
+    "Disarm is a fast and lightweight decoder and encoder for AArch64. It has a "
+    "focus on performance, zero-dependencies (not even the C standard library), "
+    "and a reasonably small size."
+
+third_party {
+homepage: "https://github.com/aengelke/disarm"
+  identifier {
+    type: "Git"
+    value: "https://github.com/aengelke/disarm"
+    primary_source: true
+    version: "2d13d3f410a52daff1c5d8ef07d623332f372560"
+  }
+  version: "2d13d3f410a52daff1c5d8ef07d623332f372560"
+  last_upgrade_date { year: 2026 month: 1 day: 9 }
+  license_type: NOTICE
+}

@@ -38,6 +38,7 @@ from spdx_builder import (
     build_spdx_document,
     collect_external_packages,
     collect_from_metadata_dir,
+    collect_platform_packages,
 )
 
 log = logging.getLogger(__name__)
@@ -86,14 +87,14 @@ def parse_scan_modes(raw):
 
 def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
                         bd_version, trust_cert, skip_upload=False,
-                        autocreate=True):
+                        autocreate=True, platform_packages=None):
     """Execute the 2-pass upload workflow.
 
     Pass 1: Upload with tiers 1-3 (no autocreate) to check what matches.
     Pass 2: Upload with autocreate (if *autocreate* is True) to create
     custom components for unmatched packages.
     """
-    all_packages = []
+    all_packages = list(platform_packages or [])
     for tier_entries in packages_by_tier.values():
         for entry in tier_entries:
             all_packages.append(entry["package"])
@@ -145,7 +146,7 @@ def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
         print("Cleaned up exploratory codelocation", file=sys.stderr)
 
     # --- Pass 2: final upload with autocreate ---
-    all_packages_final = []
+    all_packages_final = list(platform_packages or [])
     for tier_entries in packages_by_tier.values():
         for entry in tier_entries:
             all_packages_final.append(entry["package"])
@@ -189,10 +190,11 @@ def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
               file=sys.stderr)
 
     # --- Final report ---
-    print_report(packages_by_tier, events2)
+    print_report(packages_by_tier, events2,
+                 platform_count=len(platform_packages or []))
 
 
-def print_report(packages_by_tier, final_events):
+def print_report(packages_by_tier, final_events, platform_count=0):
     event_map = {}
     for e in final_events:
         event_map[e.get("importComponentName", "")] = e
@@ -205,8 +207,12 @@ def print_report(packages_by_tier, final_events):
     }
 
     print("\n" + "=" * 70)
-    print("EXTERNAL PACKAGE MATCHING REPORT")
+    print("SBOM MATCHING REPORT")
     print("=" * 70)
+
+    if platform_count:
+        print(f"\n--- Platform Repos ({platform_count} packages) ---")
+        print(f"  Included as pkg:android/platform-* PURLs")
 
     total = 0
     total_matched = 0
@@ -353,6 +359,12 @@ def main():
     print(f"Mapped to {len(repo_matches)} repos "
           f"({len(unmatched)} unmatched)", file=sys.stderr)
 
+    # Collect platform (non-external) repos
+    platform_packages = collect_platform_packages(
+        repo_matches, args.android_version)
+    print(f"Collected {len(platform_packages)} platform repo packages",
+          file=sys.stderr)
+
     if not scan_modes:
         print("External scanning disabled (mode NONE)", file=sys.stderr)
         return
@@ -378,6 +390,17 @@ def main():
 
     if args.list_packages:
         print("\n--- Package Classification ---")
+
+        if platform_packages:
+            print(f"\n[platform] ({len(platform_packages)} packages)")
+            for pkg in platform_packages:
+                purl = ""
+                for ref in pkg["externalRefs"]:
+                    if ref["referenceType"] == "purl":
+                        purl = ref["referenceLocator"]
+                        break
+                print(f"  {pkg['name']} {pkg['versionInfo']} -> {purl}")
+
         for tier_name in ["github_purl", "cpe_lookup", "github_commit", "custom"]:
             entries = packages_by_tier.get(tier_name, [])
             if not entries:
@@ -465,6 +488,7 @@ def main():
         args.bd_project, args.bd_version, args.bd_trust_cert,
         skip_upload=args.skip_upload,
         autocreate="CUSTOM_COMPS" in scan_modes,
+        platform_packages=platform_packages,
     )
 
 

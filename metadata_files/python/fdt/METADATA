@@ -1,0 +1,16 @@
+name: "fdt"
+description:
+    "This python module is usable for manipulation with Device Tree Data and "
+    "primary was created for imxsb tool."
+
+third_party {
+  identifier {
+    type: "Git"
+    value: "https://github.com/molejar/pyFDT"
+    primary_source: true
+    version: "0.3.3"
+  }
+  version: "0.3.3"
+  last_upgrade_date { year: 2026 month: 1 day: 29 }
+  license_type: NOTICE
+}

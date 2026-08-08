@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/rust/cros-libva
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "cros-libva"
+description: "This crate provides lightweight and (hopefully) safe libva abstractions for use within Rust code with minimal dependencies. It is developed for use in ChromeOS, but has no ChromeOS specifics or dependencies and should thus be usable anywhere."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2024
+    month: 12
+    day: 6
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/chromeos/cros-libva"
+    version: "v0.0.13"
+    primary_source: true
+  }
+}

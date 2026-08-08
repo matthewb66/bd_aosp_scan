@@ -1,0 +1,18 @@
+name: "rlbox"
+description:
+  "RLBox is a general purpose sandboxing API that can be used to interact "
+  "with libraries sandboxed with different backends: WebAssembly, Native "
+  "Client, OS processes, etc."
+
+third_party {
+  homepage: "https://rlbox.dev"
+  identifier {
+    type: "Git"
+    value: "https://github.com/PLSysSec/rlbox"
+    primary_source: true
+    version: "a1a690a934e1562862021072e01d21e935719e9f"
+  }
+  version: "a1a690a934e1562862021072e01d21e935719e9f"
+  last_upgrade_date { year: 2025 month: 11 day: 6 }
+  license_type: NOTICE
+}

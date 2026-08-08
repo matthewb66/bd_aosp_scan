@@ -175,6 +175,38 @@ def classify_package(metadata, repo_path):
     return "custom", pkg, info
 
 
+def collect_platform_packages(repo_matches, android_version):
+    """Build SPDX packages for non-external (platform) repos.
+
+    Each repo gets a pkg:android/platform-{dashed-path}@{android_version} PURL.
+    Returns a list of SPDX package dicts.
+    """
+    packages = []
+    seen_spdx_ids = set()
+
+    for repo_path in sorted(repo_matches.keys()):
+        if repo_path.startswith("external/"):
+            continue
+
+        pkg_name = f"platform-{repo_path.replace('/', '-')}"
+        safe_id = re.sub(r'[^a-zA-Z0-9._-]', '-', pkg_name)
+        spdx_id = f"SPDXRef-{safe_id}"
+
+        if spdx_id in seen_spdx_ids:
+            suffix = repo_path.replace("/", "-").replace(".", "-")
+            spdx_id = f"SPDXRef-{suffix}"
+        seen_spdx_ids.add(spdx_id)
+
+        purl = f"pkg:android/{pkg_name}@{android_version}"
+        pkg = build_spdx_package(
+            spdx_id, pkg_name, android_version,
+            "NOASSERTION", "NOASSERTION", purl=purl,
+        )
+        packages.append(pkg)
+
+    return packages
+
+
 def collect_external_packages(repo_matches, aosp_root, android_version):
     packages_by_tier = {
         "github_purl": [],
@@ -221,8 +253,9 @@ def collect_from_metadata_dir(repo_matches, metadata_dir, android_version):
         if not repo_path.startswith("external/"):
             continue
 
-        pkg_name = repo_path.split("/")[-1]
-        metadata_path = os.path.join(metadata_dir, pkg_name)
+        sub_path = repo_path.split("/", 1)[1]
+
+        metadata_path = os.path.join(metadata_dir, sub_path, "METADATA")
 
         metadata = {"name": None, "version": None, "cpe": None,
                     "github_url": None, "closest_version": None,
@@ -232,7 +265,7 @@ def collect_from_metadata_dir(repo_matches, metadata_dir, android_version):
         if os.path.isfile(metadata_path):
             metadata = parse_metadata(metadata_path)
         else:
-            log.debug("No metadata file for %s at %s", pkg_name, metadata_path)
+            log.debug("No metadata file for %s", sub_path)
 
         tier, pkg, info = classify_package(metadata, repo_path)
 

@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/rust/ninja-to-soong
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "ninja-to-soong"
+description: "Generate Soong files from Ninja"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 19
+  }
+  homepage: "https://github.com/rjodinchr/ninja-to-soong"
+  identifier {
+    type: "Git"
+    value: "https://github.com/rjodinchr/ninja-to-soong"
+    version: "3801a0339cc5bf03e7ee0d659edc480281a4c1da"
+    primary_source: true
+  }
+}

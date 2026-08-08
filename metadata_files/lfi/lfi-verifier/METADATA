@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/lfi/lfi-verifier
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "lfi-verifier"
+description: "This produces the liblfiv.a library, along with a lfi-verify tool that can be used on ELF binaries."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 12
+  }
+  homepage: "https://github.com/lfi-project/lfi-verifier"
+  identifier {
+    type: "Git"
+    value: "https://github.com/lfi-project/lfi-verifier"
+    version: "677cbf1aa9c778f1f27ef4b17cf5704dc086b2c8"
+    primary_source: true
+  }
+}

@@ -1,0 +1,16 @@
+name: "linux-firmware-btpci-ibt_be211"
+description:
+    "Contains an import of upstream linux-firmware for btpci-ibt_be211."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "57303edc4101c1003ec45e91652f281ebd2f41b2"
+  }
+  version: "57303edc4101c1003ec45e91652f281ebd2f41b2"
+  last_upgrade_date { year: 2026 month: 3 day: 13 }
+  license_type: BY_EXCEPTION_ONLY
+}

@@ -1,0 +1,15 @@
+name: "chromium.org-wayland-protocols"
+description: "Imports the Wayland protocols that are defined as part of the Chromium code base."
+third_party {
+  url {
+    type: GIT
+    value: "https://chromium.googlesource.com/chromium/src.git/+/main/third_party/wayland-protocols/unstable"
+  }
+  url {
+    type: GIT
+    value: "https://chromium.googlesource.com/chromium/src.git/+/main/components/exo/wayland/protocol"
+  }
+  version: "126.0.6457.1"
+  last_upgrade_date { year: 2024 month: 7 day: 23 }
+  license_type: NOTICE
+}

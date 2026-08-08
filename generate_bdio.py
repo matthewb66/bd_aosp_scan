@@ -397,7 +397,8 @@ def dir_size(path):
 
 
 def run_detect(scan_dir, bd_project, bd_version, bd_api_token, bd_url,
-               bd_trust_cert, batch_num):
+               bd_trust_cert, batch_num, detect_tools=None,
+               codelocation_prefix=""):
     detect_script = os.path.join(tempfile.gettempdir(), "detect11.sh")
     if not os.path.exists(detect_script):
         subprocess.run(
@@ -408,6 +409,8 @@ def run_detect(scan_dir, bd_project, bd_version, bd_api_token, bd_url,
         )
         os.chmod(detect_script, 0o755)
 
+    suffix = f"-{codelocation_prefix}{batch_num}" if codelocation_prefix \
+        else f"-{batch_num}"
     cmd = [
         "bash", detect_script,
         f"--blackduck.api.token={bd_api_token}",
@@ -415,10 +418,12 @@ def run_detect(scan_dir, bd_project, bd_version, bd_api_token, bd_url,
         f"--detect.project.name={bd_project}",
         f"--detect.project.version.name={bd_version}",
         f"--detect.source.path={scan_dir}",
-        f"--detect.project.codelocation.suffix=-{batch_num}",
+        f"--detect.project.codelocation.suffix={suffix}",
         "--detect.excluded.directories='*test*'",
-        "--detect.excluded.directories.search.depth=8"
+        "--detect.excluded.directories.search.depth=8",
     ]
+    if detect_tools:
+        cmd.append(f"--blackduck.tools={detect_tools}")
     if bd_trust_cert:
         cmd.append("--blackduck.trust.cert=true")
 
@@ -435,7 +440,8 @@ def run_detect(scan_dir, bd_project, bd_version, bd_api_token, bd_url,
 
 
 def run_sigscan_external(skipped_external, aosp_root, bd_project, bd_version,
-                         bd_api_token, bd_url, bd_trust_cert):
+                         bd_api_token, bd_url, bd_trust_cert,
+                         detect_tools=None, codelocation_prefix=""):
     external_dir = os.path.join(aosp_root, "external")
     bdignore_path = os.path.join(external_dir, ".bdignore")
 
@@ -468,7 +474,9 @@ def run_sigscan_external(skipped_external, aosp_root, bd_project, bd_version,
                   len(exclude), len(all_folders))
         try:
             run_detect(external_dir, bd_project, bd_version, bd_api_token,
-                       bd_url, bd_trust_cert, batch_num)
+                       bd_url, bd_trust_cert, batch_num,
+                       detect_tools=detect_tools,
+                       codelocation_prefix=codelocation_prefix)
         finally:
             if os.path.exists(bdignore_path):
                 os.remove(bdignore_path)

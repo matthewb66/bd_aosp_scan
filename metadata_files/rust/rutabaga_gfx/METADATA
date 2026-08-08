@@ -1,0 +1,17 @@
+name: "rutabaga_gfx"
+description: "Handling virtio-gpu protocols"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 8
+    day: 28
+  }
+  homepage: "https://github.com/magma-gpu/rutabaga_gfx"
+  identifier {
+    type: "Git"
+    value: "https://github.com/magma-gpu/rutabaga_gfx"
+    version: "a84179a072c723ca22c6841b225092e4086d800f"
+    primary_source: true
+  }
+}

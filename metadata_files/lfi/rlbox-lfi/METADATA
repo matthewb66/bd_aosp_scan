@@ -1,0 +1,19 @@
+name: "rlbox-lfi"
+description:
+  "Integration with RLBox sandboxing API to leverage the sandboxing from the "
+  "LFI compiler described in Lightweight Fault Isolation: Practical, "
+  "Efficient, and Secure Software Sandboxing. "
+  ""
+
+third_party {
+  homepage: "https://github.com/UT-Security/rlbox_lfi_sandbox"
+  identifier {
+    type: "Git"
+    value: "https://github.com/UT-Security/rlbox_lfi_sandbox"
+    primary_source: true
+    version: "56ef38539769d18c61bde0e2a8b9ff1f6e656b31"
+  }
+  version: "56ef38539769d18c61bde0e2a8b9ff1f6e656b31"
+  last_upgrade_date { year: 2025 month: 11 day: 6 }
+  license_type: NOTICE
+}

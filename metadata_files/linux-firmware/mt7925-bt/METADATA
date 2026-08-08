@@ -1,0 +1,16 @@
+name: "linux-firmware-mt7925-bt"
+description:
+    "Contains an import of upstream linux-firmware for mt7925-bt."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "0d347a3f3ec4599efeb4c49636ff9faf01c83b79"
+  }
+  version: "0d347a3f3ec4599efeb4c49636ff9faf01c83b79"
+  last_upgrade_date { year: 2026 month: 4 day: 23 }
+  license_type: BY_EXCEPTION_ONLY
+}
