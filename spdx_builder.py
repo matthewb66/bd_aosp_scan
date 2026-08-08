@@ -103,7 +103,7 @@ def _sanitize_purl_version(version):
     return re.sub(r'[^a-zA-Z0-9._-]', '-', version)
 
 
-def classify_package(metadata, repo_path):
+def classify_package(metadata, repo_path, android_version):
     github_url = metadata.get("github_url")
     cpe = metadata.get("cpe")
     closest_version = metadata.get("closest_version")
@@ -165,11 +165,10 @@ def classify_package(metadata, repo_path):
         )
         return "github_commit", pkg, info
 
-    pkg_version = _sanitize_purl_version(version or "unknown")
-    safe_pkg_name = name.replace(" ", "-").replace("/", "-")
-    purl = f"pkg:generic/{safe_pkg_name}@{pkg_version}"
+    pkg_name = f"platform-{repo_path.replace('/', '-')}"
+    purl = f"pkg:android/{pkg_name}@{android_version}"
     pkg = build_spdx_package(
-        spdx_id, name, version or pkg_version,
+        spdx_id, pkg_name, android_version,
         github_url or "NOASSERTION", license_spdx, purl=purl,
     )
     return "custom", pkg, info
@@ -228,7 +227,7 @@ def collect_external_packages(repo_matches, aosp_root, android_version):
             metadata_path = os.path.join(aosp_root, repo_path, "METADATA")
             metadata = parse_metadata(metadata_path)
 
-        tier, pkg, info = classify_package(metadata, repo_path)
+        tier, pkg, info = classify_package(metadata, repo_path, android_version)
 
         if pkg["SPDXID"] in seen_spdx_ids:
             suffix = repo_path.replace("/", "-").replace(".", "-")
@@ -267,7 +266,7 @@ def collect_from_metadata_dir(repo_matches, metadata_dir, android_version):
         else:
             log.debug("No metadata file for %s", sub_path)
 
-        tier, pkg, info = classify_package(metadata, repo_path)
+        tier, pkg, info = classify_package(metadata, repo_path, android_version)
 
         if pkg["SPDXID"] in seen_spdx_ids:
             suffix = repo_path.replace("/", "-").replace(".", "-")
