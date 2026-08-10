@@ -147,13 +147,12 @@ def classify_package(metadata, repo_path, android_version):
         return "github_purl", pkg, info
 
     if cpe:
-        pkg_version = _sanitize_purl_version(version or "unknown")
-        safe_pkg_name = name.replace(" ", "-").replace("/", "-")
-        fallback_purl = f"pkg:generic/{safe_pkg_name}@{pkg_version}"
+        pkg_name = f"platform-{repo_path.replace('/', '-')}"
+        purl = f"pkg:android/{pkg_name}@{android_version}"
         pkg = build_spdx_package(
             spdx_id, name, version or "NOASSERTION",
             github_url or "NOASSERTION", license_spdx,
-            purl=fallback_purl, cpe=cpe,
+            purl=purl, cpe=cpe,
         )
         return "cpe_lookup", pkg, info
 
