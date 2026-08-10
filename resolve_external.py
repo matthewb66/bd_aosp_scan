@@ -261,6 +261,9 @@ def resolve_bd_kb_versions(packages_by_tier, bearer, bd_url,
             f.add_done_callback(on_done)
             futures.append(f)
 
+    print(f"  BD KB resolution: {total}/{total} done, "
+          f"processing results...", file=sys.stderr)
+
     promoted = 0
     remaining = []
     for f in futures:
@@ -358,6 +361,9 @@ def resolve_cpe_packages(packages_by_tier, bearer, bd_url, trust_cert):
                                 bd_url, trust_cert)
             f.add_done_callback(on_done)
             futures.append(f)
+
+    print(f"  CPE resolution: {total}/{total} done, "
+          f"processing results...", file=sys.stderr)
 
     resolved = 0
     for f in futures:
@@ -458,6 +464,9 @@ def resolve_aosp_repo_packages(packages_by_tier, android_version, bearer,
                                 android_version, bearer, bd_url, trust_cert)
             f.add_done_callback(on_done)
             futures.append(f)
+
+    print(f"  AOSP external repo resolution: {total}/{total} done, "
+          f"processing results...", file=sys.stderr)
 
     resolved = 0
     for f in futures:
