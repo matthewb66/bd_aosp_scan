@@ -146,7 +146,7 @@ def resolve_github_versions(packages_by_tier, github_token=None):
 
     total = len(commit_entries)
     print(f"\nResolving GitHub versions for {total} "
-          f"commit-hash packages...", file=sys.stderr)
+          f"external commit-hash packages...", file=sys.stderr)
 
     done_count = 0
     lock = threading.Lock()
@@ -240,7 +240,7 @@ def resolve_bd_kb_versions(packages_by_tier, bearer, bd_url,
 
     total = len(commit_entries)
     print(f"\nResolving BD KB versions by date for {total} "
-          f"remaining commit-hash packages...", file=sys.stderr)
+          f"remaining external commit-hash packages...", file=sys.stderr)
 
     done_count = 0
     lock = threading.Lock()
@@ -437,7 +437,7 @@ def resolve_aosp_repo_packages(packages_by_tier, android_version, bearer,
         return 0
 
     total = len(work_list)
-    print(f"\nResolving AOSP repo PURLs for {total} packages...",
+    print(f"\nResolving AOSP repo PURLs for {total} external packages...",
           file=sys.stderr)
 
     done_count = 0
@@ -448,7 +448,7 @@ def resolve_aosp_repo_packages(packages_by_tier, android_version, bearer,
         with lock:
             done_count += 1
             if done_count % 10 == 0 or done_count == total:
-                print(f"  AOSP repo resolution: {done_count}/{total} done",
+                print(f"  AOSP external repo resolution: {done_count}/{total} done",
                       file=sys.stderr)
 
     futures = []

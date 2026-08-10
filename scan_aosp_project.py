@@ -374,6 +374,13 @@ def main():
              "Overrides CUSTOM_COMPS scan mode.",
     )
     parser.add_argument(
+        "--external-repo-custom", default="AOSP_REPOS",
+        choices=["AOSP_REPOS", "OTHER"],
+        help="PURL type for external custom components. AOSP_REPOS (default) "
+             "uses pkg:android/platform-* for all. OTHER uses pkg:github "
+             "where available, pkg:generic otherwise.",
+    )
+    parser.add_argument(
         "--debug", action="store_true",
         help="Enable debug logging",
     )
@@ -418,10 +425,12 @@ def main():
         print("External scanning disabled (mode NONE)", file=sys.stderr)
     elif args.metadata_dir:
         packages_by_tier = collect_from_metadata_dir(
-            repo_matches, args.metadata_dir, args.android_version)
+            repo_matches, args.metadata_dir, args.android_version,
+            custom_purl=args.external_repo_custom)
     else:
         packages_by_tier = collect_external_packages(
-            repo_matches, args.aosp_root, args.android_version)
+            repo_matches, args.aosp_root, args.android_version,
+            custom_purl=args.external_repo_custom)
 
     # Resolve GitHub versions for commit-hash packages
     if "GITHUB_REPOS" in scan_modes:
@@ -431,7 +440,7 @@ def main():
     # Summary
     total_external = sum(len(v) for v in packages_by_tier.values())
     print(f"\nClassification: {len(platform_packages)} platform, "
-          f"{total_external} external packages", file=sys.stderr)
+          f"{total_external} external packages of which:", file=sys.stderr)
     for tier, entries in packages_by_tier.items():
         if entries:
             print(f"  {tier}: {len(entries)}", file=sys.stderr)
