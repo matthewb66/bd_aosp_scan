@@ -321,20 +321,6 @@ def bd_upload_spdx(bearer, sbom_content, bd_url, autocreate=False,
     parts.append(sbom_bytes)
     parts.append(b"\r\n")
 
-    if project_name:
-        parts.append(
-            f"--{boundary}\r\n"
-            f"Content-Disposition: form-data; name=\"projectName\"\r\n\r\n"
-            f"{project_name}\r\n"
-        )
-
-    if version_name:
-        parts.append(
-            f"--{boundary}\r\n"
-            f"Content-Disposition: form-data; name=\"versionName\"\r\n\r\n"
-            f"{version_name}\r\n"
-        )
-
     if autocreate:
         parts.append(
             f"--{boundary}\r\n"
@@ -349,6 +335,15 @@ def bd_upload_spdx(bearer, sbom_content, bd_url, autocreate=False,
         body += part.encode("utf-8") if isinstance(part, str) else part
 
     url = f"{bd_url.rstrip('/')}/api/scan/data"
+    query_parts = []
+    if project_name:
+        query_parts.append(
+            f"projectName={urllib.request.quote(project_name, safe='')}")
+    if version_name:
+        query_parts.append(
+            f"versionName={urllib.request.quote(version_name, safe='')}")
+    if query_parts:
+        url = f"{url}?{'&'.join(query_parts)}"
     req = urllib.request.Request(url, data=body, method="POST")
     req.add_header("Authorization", f"Bearer {bearer}")
     req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
