@@ -348,7 +348,19 @@ def bd_upload_spdx(bearer, sbom_content, bd_url, autocreate=False,
     req.add_header("Authorization", f"Bearer {bearer}")
     req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
     ctx = _ssl_ctx(trust_cert)
-    resp = urllib.request.urlopen(req, context=ctx)
+    log.debug("SPDX upload URL: %s", url)
+    try:
+        resp = urllib.request.urlopen(req, context=ctx)
+    except urllib.error.HTTPError as e:
+        error_body = ""
+        try:
+            error_body = e.read().decode("utf-8", errors="replace")
+        except Exception:
+            pass
+        print(f"SPDX upload failed: HTTP {e.code} {e.reason}\n"
+              f"URL: {url}\nResponse: {error_body[:2000]}",
+              file=sys.stderr)
+        raise
     scan_url = resp.headers.get("Location", "")
     return resp.getcode(), scan_url
 
