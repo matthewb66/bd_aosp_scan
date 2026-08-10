@@ -13,6 +13,8 @@ import json
 import logging
 import os
 import sys
+
+__version__ = "1.0"
 import uuid
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
@@ -294,6 +296,10 @@ def main():
                     "and upload to Black Duck SCA"
     )
     parser.add_argument(
+        "--version", action="version",
+        version=f"%(prog)s {__version__}",
+    )
+    parser.add_argument(
         "--module-info", required=True,
         help="Path to module-info.json from the AOSP build",
     )
@@ -377,6 +383,8 @@ def main():
         format="%(levelname)s: %(message)s",
         stream=sys.stderr,
     )
+
+    print(f"scan_aosp_project v{__version__}", file=sys.stderr)
 
     scan_modes = parse_scan_modes(args.external_scan_modes)
     print(f"External scan modes: {', '.join(sorted(scan_modes)) or 'NONE'}",
