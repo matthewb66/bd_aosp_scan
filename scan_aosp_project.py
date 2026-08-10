@@ -21,6 +21,8 @@ from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_rep
 from bd_api import (
     bd_authenticate,
     bd_delete_codelocation,
+    bd_find_or_create_project,
+    bd_find_or_create_version,
     bd_get_import_events,
     bd_poll_scan,
     bd_upload_spdx,
@@ -529,6 +531,16 @@ def main():
             print("SIG_SCAN: no unmatched repos to scan", file=sys.stderr)
 
     autocreate = not args.no_custom_components
+
+    if not args.skip_upload:
+        print("\nEnsuring project version exists...", file=sys.stderr)
+        project_href = bd_find_or_create_project(
+            bearer, args.bd_project, args.bd_url, args.bd_trust_cert)
+        bd_find_or_create_version(
+            bearer, project_href, args.bd_version, args.bd_url,
+            args.bd_trust_cert)
+        print(f"Project version ready: {args.bd_project} / {args.bd_version}",
+              file=sys.stderr)
 
     # Upload platform repos (single pass)
     run_platform_upload(
