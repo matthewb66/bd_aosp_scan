@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "1.0"
+__version__ = "0.1"
 import uuid
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
@@ -118,7 +118,7 @@ def _upload_and_map(packages, bearer, bd_url, bd_project, bd_version,
                if e["event"] == "COMPONENT_MAPPING_SUCCEEDED"]
     failed = [e for e in events
               if e["event"] == "COMPONENT_MAPPING_FAILED"]
-    print(f"Results: {len(matched)} matched, {len(failed)} failed",
+    print(f"Results: {len(matched)} matched, {len(failed)} unmatched",
           file=sys.stderr)
 
     return events
@@ -213,7 +213,7 @@ def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
     failed = [e for e in events
               if e["event"] == "COMPONENT_MAPPING_FAILED"]
 
-    print(f"Pass 1 results: {len(matched)} matched, {len(failed)} failed",
+    print(f"Pass 1 results: {len(matched)} matched, {len(failed)} unmatched",
           file=sys.stderr)
 
     codeloc_href = _get_codeloc_href(summary)
@@ -249,7 +249,7 @@ def print_report(packages_by_tier, final_events):
 
     total = 0
     total_matched = 0
-    total_failed = 0
+    total_unmatched = 0
 
     for tier_name in ["github_purl", "cpe_lookup", "github_commit", "custom"]:
         entries = packages_by_tier.get(tier_name, [])
@@ -258,7 +258,7 @@ def print_report(packages_by_tier, final_events):
 
         print(f"\n--- {tier_labels[tier_name]} ({len(entries)} packages) ---")
         matched = 0
-        failed = 0
+        unmatched = 0
         for entry in entries:
             pkg = entry["package"]
             name = pkg["name"]
@@ -272,24 +272,24 @@ def print_report(packages_by_tier, final_events):
                 log.debug("  MATCHED: %s -> %s %s", name, bd_name, bd_ver)
             elif status == "COMPONENT_MAPPING_FAILED":
                 reason = event.get("failureReason", "")[:60]
-                failed += 1
-                log.debug("  FAILED:  %s (%s)", name, reason)
+                unmatched += 1
+                log.debug("  UNMATCHED: %s (%s)", name, reason)
             else:
-                failed += 1
+                unmatched += 1
                 log.debug("  NO EVENT: %s", name)
 
         total += len(entries)
         total_matched += matched
-        total_failed += failed
-        print(f"  Matched: {matched}/{len(entries)}")
-        if failed:
-            print(f"  Failed:  {failed}/{len(entries)}")
+        total_unmatched += unmatched
+        print(f"  Matched:   {matched}/{len(entries)}")
+        if unmatched:
+            print(f"  Unmatched: {unmatched}/{len(entries)}")
 
     print(f"\n{'=' * 70}")
     print(f"TOTAL: {total_matched}/{total} matched "
           f"({total_matched * 100 // max(total, 1)}%)")
-    if total_failed:
-        print(f"       {total_failed} failed")
+    if total_unmatched:
+        print(f"       {total_unmatched} unmatched")
     print("=" * 70)
 
 
@@ -558,21 +558,19 @@ def main():
         rewritten = 0
         for tier_entries in packages_by_tier.values():
             for entry in tier_entries:
-                if entry.get("bd_ref"):
-                    continue
                 pkg = entry["package"]
                 repo_path = entry["info"]["repo_path"]
                 pkg_name = f"platform-{repo_path.replace('/', '-')}"
-                purl = f"pkg:android/{pkg_name}@{args.android_version}"
+                aosp_purl = f"pkg:android/{pkg_name}@{args.android_version}"
                 for ref in pkg["externalRefs"]:
                     if ref["referenceType"] == "purl":
-                        if ref["referenceLocator"] != purl:
-                            ref["referenceLocator"] = purl
+                        if ref["referenceLocator"] != aosp_purl:
+                            ref["referenceLocator"] = aosp_purl
                             rewritten += 1
                         break
         if rewritten:
-            print(f"Rewrote {rewritten} unresolved package PURLs to "
-                  f"pkg:android", file=sys.stderr)
+            print(f"Rewrote {rewritten} package PURLs to pkg:android",
+                  file=sys.stderr)
 
     autocreate = not args.no_custom_components
 
