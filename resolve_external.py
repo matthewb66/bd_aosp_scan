@@ -157,7 +157,7 @@ def resolve_github_versions(packages_by_tier, github_token=None):
             done_count += 1
             if done_count % 10 == 0 or done_count == total:
                 print(f"  GitHub resolution: {done_count}/{total} done",
-                      file=sys.stderr)
+                      file=sys.stderr, flush=True)
 
     futures = []
     with ThreadPoolExecutor(max_workers=10) as executor:
@@ -251,7 +251,7 @@ def resolve_bd_kb_versions(packages_by_tier, bearer, bd_url,
             done_count += 1
             if done_count % 5 == 0 or done_count == total:
                 print(f"  BD KB resolution: {done_count}/{total} done",
-                      file=sys.stderr)
+                      file=sys.stderr, flush=True)
 
     futures = []
     with ThreadPoolExecutor(max_workers=15) as executor:
@@ -262,7 +262,7 @@ def resolve_bd_kb_versions(packages_by_tier, bearer, bd_url,
             futures.append(f)
 
     print(f"  BD KB resolution: {total}/{total} done, "
-          f"processing results...", file=sys.stderr)
+          f"processing results...", file=sys.stderr, flush=True)
 
     promoted = 0
     remaining = []
@@ -352,7 +352,7 @@ def resolve_cpe_packages(packages_by_tier, bearer, bd_url, trust_cert):
             done_count += 1
             if done_count % 10 == 0 or done_count == total:
                 print(f"  CPE resolution: {done_count}/{total} done",
-                      file=sys.stderr)
+                      file=sys.stderr, flush=True)
 
     futures = []
     with ThreadPoolExecutor(max_workers=15) as executor:
@@ -363,7 +363,7 @@ def resolve_cpe_packages(packages_by_tier, bearer, bd_url, trust_cert):
             futures.append(f)
 
     print(f"  CPE resolution: {total}/{total} done, "
-          f"processing results...", file=sys.stderr)
+          f"processing results...", file=sys.stderr, flush=True)
 
     resolved = 0
     for f in futures:
@@ -411,24 +411,30 @@ def _resolve_one_aosp_repo(entry, android_version, bearer, bd_url,
     repo_path = info.get("repo_path", "")
     aosp_name = "platform-" + repo_path.replace("/", "-")
 
-    comp_url, comp_id = _bd_find_component_by_android(
-        bearer, aosp_name, bd_url, trust_cert)
-    if not comp_url:
+    try:
+        comp_url, comp_id = _bd_find_component_by_android(
+            bearer, aosp_name, bd_url, trust_cert)
+        if not comp_url:
+            return entry, None
+
+        ver_name, ver_id = _bd_find_version_by_name(
+            bearer, comp_url, android_version, bd_url, trust_cert)
+        if not ver_id:
+            log.debug("BD AOSP: component found for %s but no version %s",
+                      aosp_name, android_version)
+            return entry, None
+
+        origin_id = _bd_get_first_origin(bearer, comp_url, ver_id, trust_cert)
+
+        return entry, {
+            "comp_id": comp_id, "ver_id": ver_id, "origin_id": origin_id,
+            "aosp_name": aosp_name, "ver_name": ver_name,
+        }
+    except Exception as exc:
+        log.debug("AOSP resolution error for %s: %s", aosp_name, exc)
+        print(f"  WARNING: AOSP resolution failed for {aosp_name}: {exc}",
+              file=sys.stderr, flush=True)
         return entry, None
-
-    ver_name, ver_id = _bd_find_version_by_name(
-        bearer, comp_url, android_version, bd_url, trust_cert)
-    if not ver_id:
-        log.debug("BD AOSP: component found for %s but no version %s",
-                  aosp_name, android_version)
-        return entry, None
-
-    origin_id = _bd_get_first_origin(bearer, comp_url, ver_id, trust_cert)
-
-    return entry, {
-        "comp_id": comp_id, "ver_id": ver_id, "origin_id": origin_id,
-        "aosp_name": aosp_name, "ver_name": ver_name,
-    }
 
 
 def resolve_aosp_repo_packages(packages_by_tier, android_version, bearer,
@@ -455,18 +461,22 @@ def resolve_aosp_repo_packages(packages_by_tier, android_version, bearer,
             done_count += 1
             if done_count % 10 == 0 or done_count == total:
                 print(f"  AOSP external repo resolution: {done_count}/{total} done",
-                      file=sys.stderr)
+                      file=sys.stderr, flush=True)
 
     futures = []
+    print(f"  Submitting {total} AOSP resolution tasks...",
+          file=sys.stderr, flush=True)
     with ThreadPoolExecutor(max_workers=15) as executor:
         for entry in work_list:
             f = executor.submit(_resolve_one_aosp_repo, entry,
                                 android_version, bearer, bd_url, trust_cert)
             f.add_done_callback(on_done)
             futures.append(f)
+        print(f"  All {total} tasks submitted, waiting for completion...",
+              file=sys.stderr, flush=True)
 
     print(f"  AOSP external repo resolution: {total}/{total} done, "
-          f"processing results...", file=sys.stderr)
+          f"processing results...", file=sys.stderr, flush=True)
 
     resolved = 0
     for f in futures:

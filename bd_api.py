@@ -25,7 +25,7 @@ def _ssl_ctx(trust_cert):
 
 
 def _api_request(url, bearer, method="GET", data=None, accept=None,
-                 content_type=None, trust_cert=False):
+                 content_type=None, trust_cert=False, timeout=60):
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("Authorization", f"Bearer {bearer}")
     if accept:
@@ -33,7 +33,7 @@ def _api_request(url, bearer, method="GET", data=None, accept=None,
     if content_type:
         req.add_header("Content-Type", content_type)
     ctx = _ssl_ctx(trust_cert)
-    resp = urllib.request.urlopen(req, context=ctx)
+    resp = urllib.request.urlopen(req, context=ctx, timeout=timeout)
     return resp
 
 
