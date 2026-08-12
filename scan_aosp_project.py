@@ -37,6 +37,7 @@ from resolve_external import (
 )
 from spdx_builder import (
     build_spdx_document,
+    build_spdx_package,
     collect_external_packages,
     collect_from_metadata_dir,
     collect_platform_packages,
@@ -412,7 +413,21 @@ def main():
     # Collect platform (non-external) repos
     platform_packages = collect_platform_packages(
         repo_matches, args.android_version)
-    print(f"Collected {len(platform_packages)} platform repo packages",
+
+    # Add Google Android component for Android Security Bulletin tracking
+    ver = args.android_version
+    ver_stripped = ver[len("android-"):] if ver.startswith("android-") else ver
+    major_minor = ".".join(ver_stripped.split(".")[:2])
+    cpe = f"cpe:2.3:o:google:android:{major_minor}:*:*:*:*:*:*:*"
+    android_pkg = build_spdx_package(
+        "SPDXRef-google-android", "Google Android", ver,
+        "https://android.googlesource.com", "Apache-2.0",
+        purl=f"pkg:android/google/android@{ver}", cpe=cpe,
+    )
+    platform_packages.append(android_pkg)
+
+    print(f"Collected {len(platform_packages)} platform packages "
+          f"(including Google Android {ver})",
           file=sys.stderr)
 
     # Collect and classify external packages
@@ -538,6 +553,26 @@ def main():
             )
         else:
             print("SIG_SCAN: no unmatched repos to scan", file=sys.stderr)
+
+    if args.external_repo_custom == "AOSP_REPOS":
+        rewritten = 0
+        for tier_entries in packages_by_tier.values():
+            for entry in tier_entries:
+                if entry.get("bd_ref"):
+                    continue
+                pkg = entry["package"]
+                repo_path = entry["info"]["repo_path"]
+                pkg_name = f"platform-{repo_path.replace('/', '-')}"
+                purl = f"pkg:android/{pkg_name}@{args.android_version}"
+                for ref in pkg["externalRefs"]:
+                    if ref["referenceType"] == "purl":
+                        if ref["referenceLocator"] != purl:
+                            ref["referenceLocator"] = purl
+                            rewritten += 1
+                        break
+        if rewritten:
+            print(f"Rewrote {rewritten} unresolved package PURLs to "
+                  f"pkg:android", file=sys.stderr)
 
     autocreate = not args.no_custom_components
 
