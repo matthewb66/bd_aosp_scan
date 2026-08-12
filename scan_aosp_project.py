@@ -375,7 +375,7 @@ def main():
              "Overrides CUSTOM_COMPS scan mode.",
     )
     parser.add_argument(
-        "--external-repo-custom", default="AOSP_REPOS",
+        "--custom-extrepos-type", default="AOSP_REPOS",
         choices=["AOSP_REPOS", "OTHER"],
         help="PURL type for external custom components. AOSP_REPOS (default) "
              "uses pkg:android/platform-* for all. OTHER uses pkg:github "
@@ -441,11 +441,11 @@ def main():
     elif args.metadata_dir:
         packages_by_tier = collect_from_metadata_dir(
             repo_matches, args.metadata_dir, args.android_version,
-            custom_purl=args.external_repo_custom)
+            custom_purl=args.custom_extrepos_type)
     else:
         packages_by_tier = collect_external_packages(
             repo_matches, args.aosp_root, args.android_version,
-            custom_purl=args.external_repo_custom)
+            custom_purl=args.custom_extrepos_type)
 
     # Resolve GitHub versions for commit-hash packages
     if "GITHUB_REPOS" in scan_modes:
@@ -554,7 +554,7 @@ def main():
         else:
             print("SIG_SCAN: no unmatched repos to scan", file=sys.stderr)
 
-    if args.external_repo_custom == "AOSP_REPOS":
+    if args.custom_extrepos_type == "AOSP_REPOS":
         rewritten = 0
         for tier_entries in packages_by_tier.values():
             for entry in tier_entries:

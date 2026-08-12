@@ -72,7 +72,7 @@ Black Duck connection settings can be provided as command-line arguments or envi
 --github-token TOKEN      GitHub API token for higher rate limits (default: 60
                           requests/hour without a token)
 --external-scan-modes M   Comma-separated scan modes or preset (see below)
---external-repo-custom T  PURL type for external packages: AOSP_REPOS (default)
+--custom-extrepos-type T  PURL type for external packages: AOSP_REPOS (default)
                           or OTHER (see below)
 --no-custom-components    Disable autocreate for all uploads (platform and
                           external), overriding CUSTOM_COMPS scan mode
@@ -108,7 +108,7 @@ Modes can be combined: `--external-scan-modes 'AOSP_REPOS,CUSTOM_COMPS'`
 
 ### External Repo Custom PURL Type
 
-The `--external-repo-custom` argument controls the Package URL (PURL) scheme used for external packages in the SBOM:
+The `--custom-extrepos-type` argument controls the Package URL (PURL) scheme used for external packages in the SBOM:
 
 - **`AOSP_REPOS`** (default) — All external packages use `pkg:android/platform-{repo-path}@{android_version}`. This is appropriate when using the `AOSP_REPOS` scan mode, as it ensures all packages are identified as AOSP platform components and avoids unresolvable entries appearing in Match Review.
 
@@ -143,7 +143,7 @@ python3 scan_aosp_project.py \
     --bd-project "My-AOSP-Project" \
     --bd-version "16.0.0_r4" \
     --aosp-root /path/to/aosp \
-    --external-repo-custom OTHER \
+    --custom-extrepos-type OTHER \
     --github-token "$GITHUB_TOKEN"
 ```
 
