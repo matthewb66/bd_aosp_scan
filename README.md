@@ -211,9 +211,7 @@ python3 scan_aosp_project.py \
 
 7. **Upload platform SBOM** — uploads platform repo packages in a single pass.
 
-8. **Upload external SBOM** — uploads external packages in a 2-pass workflow:
-   - Pass 1 (exploratory): uploads without autocreate to discover which packages match existing KnowledgeBase components. The exploratory codelocation is deleted afterward.
-   - Pass 2 (final): uploads with autocreate (if `CUSTOM_COMPS` mode is active and `--create-custom-components` is passed) to create custom components for unmatched packages.
+8. **Upload external SBOM** — uploads external packages with autocreate enabled when `CUSTOM_COMPS` mode is active and `--create-custom-components` is passed, creating custom components for any packages that do not match existing KnowledgeBase components.
 
 9. **Signature scan** — if `SIG_SCAN` mode is active, runs Black Duck Detect on unmatched external repos in batches of up to 4 GB, using `.bdignore` files to control which repos are included in each batch.
 

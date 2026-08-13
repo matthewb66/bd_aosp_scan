@@ -15,12 +15,10 @@ import os
 import sys
 
 __version__ = "0.6"
-import uuid
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
 from bd_api import (
     bd_authenticate,
-    bd_delete_codelocation,
     bd_find_or_create_project,
     bd_find_or_create_version,
     bd_get_bom_components,
@@ -28,7 +26,6 @@ from bd_api import (
     bd_poll_scan,
     bd_set_component_origin_cpe,
     bd_upload_spdx,
-    _get_codeloc_href,
 )
 from detect_scan import run_sigscan_external
 from resolve_external import (
@@ -196,11 +193,7 @@ def run_platform_upload(platform_packages, bearer, bd_url, bd_project,
 def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
                         bd_version, trust_cert, skip_upload=False,
                         autocreate=True):
-    """Execute the 2-pass upload workflow for external packages.
-
-    Pass 1: Upload without autocreate to check what matches.
-    Pass 2: Upload with autocreate (if enabled) to create custom components.
-    """
+    """Upload external packages as a single SPDX SBOM."""
     all_packages = []
     for tier_entries in packages_by_tier.values():
         for entry in tier_entries:
@@ -222,50 +215,12 @@ def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
               file=sys.stderr)
         return
 
-    # --- Pass 1: exploratory upload ---
-    doc_namespace = (f"https://aosp.spdx.org/sbom/"
-                     f"{bd_project}-{bd_version}-{uuid.uuid4().hex[:8]}")
-    doc = build_spdx_document(all_packages, f"{bd_project}-{bd_version}",
-                              doc_namespace)
-    sbom_json = json.dumps(doc, indent=2)
-
-    print(f"\n=== External Pass 1: Exploratory upload "
-          f"({len(all_packages)} packages) ===", file=sys.stderr)
-    status, scan_url = bd_upload_spdx(bearer, sbom_json, bd_url,
-                                      autocreate=False,
-                                      trust_cert=trust_cert,
-                                      project_name=bd_project,
-                                      version_name=bd_version)
-    print(f"Upload HTTP {status}, polling scan...", file=sys.stderr)
-
-    summary = bd_poll_scan(bearer, scan_url, bd_url, trust_cert=trust_cert)
-    scan_state = summary.get("scanState")
-    match_count = summary.get("matchCount", 0)
-    print(f"Scan state: {scan_state}, matches: {match_count}", file=sys.stderr)
-
-    events = bd_get_import_events(bearer, scan_url, bd_url,
-                                  trust_cert=trust_cert)
-    matched = [e for e in events
-               if e["event"] == "COMPONENT_MAPPING_SUCCEEDED"]
-    failed = [e for e in events
-              if e["event"] == "COMPONENT_MAPPING_FAILED"]
-
-    print(f"Pass 1 results: {len(matched)} matched, {len(failed)} unmatched",
-          file=sys.stderr)
-
-    codeloc_href = _get_codeloc_href(summary)
-    if codeloc_href:
-        bd_delete_codelocation(bearer, codeloc_href, trust_cert)
-        print("Cleaned up exploratory codelocation", file=sys.stderr)
-
-    # --- Pass 2: final upload ---
-    events2 = _upload_and_map(
+    events = _upload_and_map(
         all_packages, bearer, bd_url, bd_project, bd_version,
         trust_cert, autocreate=autocreate, doc_suffix="external",
-        label="External Pass 2: Final upload")
+        label="External upload")
 
-    # --- Final report ---
-    print_report(packages_by_tier, events2)
+    print_report(packages_by_tier, events)
 
 
 def print_report(packages_by_tier, final_events):
