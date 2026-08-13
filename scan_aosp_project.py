@@ -591,28 +591,24 @@ def main():
         autocreate=autocreate,
     )
 
-    # Upload external packages (2-pass exploratory workflow)
-    ext_autocreate = ("CUSTOM_COMPS" in scan_modes) and autocreate
+    # Upload external packages
     run_upload_workflow(
         packages_by_tier, bearer, args.bd_url,
         args.bd_project, args.bd_version, args.bd_trust_cert,
         skip_upload=args.skip_upload,
-        autocreate=ext_autocreate,
+        autocreate=autocreate,
     )
 
     # Set CPE on all custom components after both uploads complete
     if version_href and autocreate:
-        all_cpe_map = {}
-        if autocreate:
-            all_cpe_map["Google Android"] = cpe
-        if ext_autocreate:
-            for tier_entries in packages_by_tier.values():
-                for entry in tier_entries:
-                    pkg = entry["package"]
-                    for ref in pkg.get("externalRefs", []):
-                        if ref["referenceType"] == "cpe23Type":
-                            all_cpe_map[pkg["name"]] = ref["referenceLocator"]
-                            break
+        all_cpe_map = {"Google Android": cpe}
+        for tier_entries in packages_by_tier.values():
+            for entry in tier_entries:
+                pkg = entry["package"]
+                for ref in pkg.get("externalRefs", []):
+                    if ref["referenceType"] == "cpe23Type":
+                        all_cpe_map[pkg["name"]] = ref["referenceLocator"]
+                        break
         _set_custom_component_cpes(
             all_cpe_map, bearer, version_href, args.bd_trust_cert)
 
