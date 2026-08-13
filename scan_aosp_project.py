@@ -28,7 +28,6 @@ from bd_api import (
     bd_poll_scan,
     bd_set_component_origin_cpe,
     bd_upload_spdx,
-    bd_user_can_create_custom_components,
     _get_codeloc_href,
 )
 from detect_scan import run_sigscan_external
@@ -539,7 +538,7 @@ def main():
 
     # Authenticate
     print("\nAuthenticating to Black Duck...", file=sys.stderr)
-    bearer, user_url = bd_authenticate(
+    bearer, _ = bd_authenticate(
         args.bd_api_token, args.bd_url, args.bd_trust_cert)
     print("Authenticated successfully", file=sys.stderr)
 
@@ -595,34 +594,25 @@ def main():
 
     if args.custom_extrepos_type == "AOSP_REPOS":
         rewritten = 0
-        for entry in packages_by_tier.get("custom", []):
-            if entry.get("bd_ref"):
-                continue
-            pkg = entry["package"]
-            repo_path = entry["info"]["repo_path"]
-            pkg_name = f"platform-{repo_path.replace('/', '-')}"
-            aosp_purl = f"pkg:android/{pkg_name}@{args.android_version}"
-            for ref in pkg["externalRefs"]:
-                if ref["referenceType"] == "purl":
-                    if ref["referenceLocator"] != aosp_purl:
-                        ref["referenceLocator"] = aosp_purl
-                        rewritten += 1
-                    break
+        for tier_entries in packages_by_tier.values():
+            for entry in tier_entries:
+                if entry.get("bd_ref"):
+                    continue
+                pkg = entry["package"]
+                repo_path = entry["info"]["repo_path"]
+                pkg_name = f"platform-{repo_path.replace('/', '-')}"
+                aosp_purl = f"pkg:android/{pkg_name}@{args.android_version}"
+                for ref in pkg["externalRefs"]:
+                    if ref["referenceType"] == "purl":
+                        if ref["referenceLocator"] != aosp_purl:
+                            ref["referenceLocator"] = aosp_purl
+                            rewritten += 1
+                        break
         if rewritten:
-            print(f"Rewrote {rewritten} package PURLs to pkg:android",
-                  file=sys.stderr)
+            print(f"Rewrote {rewritten} unmatched package PURLs to "
+                  f"pkg:android", file=sys.stderr)
 
     autocreate = args.create_custom_components
-
-    if autocreate and not args.skip_upload:
-        if bd_user_can_create_custom_components(
-                bearer, user_url, args.bd_trust_cert):
-            print("User has Component Manager role — custom components "
-                  "enabled", file=sys.stderr)
-        else:
-            print("WARNING: User does not have the Component Manager role "
-                  "— disabling custom component creation", file=sys.stderr)
-            autocreate = False
 
     version_href = None
     if not args.skip_upload:
