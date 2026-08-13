@@ -147,8 +147,9 @@ def _set_custom_component_cpes(cpe_map, bearer, version_href, trust_cert):
             print(f"  No origins link for {comp_name}", file=sys.stderr)
             continue
 
+        version_href = origins_href.rsplit("/origins", 1)[0]
         cpe = cpe_map[comp_name]
-        if bd_set_component_origin_cpe(bearer, origins_href, cpe, trust_cert):
+        if bd_set_component_origin_cpe(bearer, version_href, cpe, trust_cert):
             set_count += 1
             print(f"  Set CPE on {comp_name}: {cpe}", file=sys.stderr)
         else:
