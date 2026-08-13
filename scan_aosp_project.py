@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.3"
+__version__ = "0.4"
 import uuid
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
@@ -145,9 +145,14 @@ def _set_custom_component_cpes(cpe_map, bearer, version_href, trust_cert):
 
         links = {l["rel"]: l["href"]
                  for l in bom_comp.get("_meta", {}).get("links", [])}
-        cv_href = links.get("componentVersion")
+        cv_href = (links.get("componentVersion")
+                   or links.get("component-version")
+                   or links.get("version"))
         if not cv_href:
-            print(f"  No componentVersion link for {comp_name}",
+            log.debug("Available link rels for %s: %s",
+                      comp_name, list(links.keys()))
+            print(f"  No component version link for {comp_name}, "
+                  f"available links: {list(links.keys())}",
                   file=sys.stderr)
             continue
 
@@ -632,12 +637,6 @@ def main():
         autocreate=autocreate,
     )
 
-    # Set CPE on Google Android custom component after platform upload
-    if autocreate and version_href:
-        _set_custom_component_cpes(
-            {"Google Android": cpe}, bearer, version_href,
-            args.bd_trust_cert)
-
     # Upload external packages (2-pass exploratory workflow)
     ext_autocreate = ("CUSTOM_COMPS" in scan_modes) and autocreate
     run_upload_workflow(
@@ -647,18 +646,21 @@ def main():
         autocreate=ext_autocreate,
     )
 
-    # Set CPE on external custom components after external upload
-    if ext_autocreate and version_href:
-        ext_cpe_map = {}
-        for tier_entries in packages_by_tier.values():
-            for entry in tier_entries:
-                pkg = entry["package"]
-                for ref in pkg.get("externalRefs", []):
-                    if ref["referenceType"] == "cpe23Type":
-                        ext_cpe_map[pkg["name"]] = ref["referenceLocator"]
-                        break
+    # Set CPE on all custom components after both uploads complete
+    if version_href:
+        all_cpe_map = {}
+        if autocreate:
+            all_cpe_map["Google Android"] = cpe
+        if ext_autocreate:
+            for tier_entries in packages_by_tier.values():
+                for entry in tier_entries:
+                    pkg = entry["package"]
+                    for ref in pkg.get("externalRefs", []):
+                        if ref["referenceType"] == "cpe23Type":
+                            all_cpe_map[pkg["name"]] = ref["referenceLocator"]
+                            break
         _set_custom_component_cpes(
-            ext_cpe_map, bearer, version_href, args.bd_trust_cert)
+            all_cpe_map, bearer, version_href, args.bd_trust_cert)
 
 
 if __name__ == "__main__":
