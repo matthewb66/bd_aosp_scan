@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.4"
+__version__ = "0.5"
 import uuid
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
@@ -28,6 +28,7 @@ from bd_api import (
     bd_poll_scan,
     bd_set_component_origin_cpe,
     bd_upload_spdx,
+    bd_user_can_create_custom_components,
     _get_codeloc_href,
 )
 from detect_scan import run_sigscan_external
@@ -145,19 +146,13 @@ def _set_custom_component_cpes(cpe_map, bearer, version_href, trust_cert):
 
         links = {l["rel"]: l["href"]
                  for l in bom_comp.get("_meta", {}).get("links", [])}
-        cv_href = (links.get("componentVersion")
-                   or links.get("component-version")
-                   or links.get("version"))
-        if not cv_href:
-            log.debug("Available link rels for %s: %s",
-                      comp_name, list(links.keys()))
-            print(f"  No component version link for {comp_name}, "
-                  f"available links: {list(links.keys())}",
-                  file=sys.stderr)
+        origins_href = links.get("origins")
+        if not origins_href:
+            print(f"  No origins link for {comp_name}", file=sys.stderr)
             continue
 
         cpe = cpe_map[comp_name]
-        if bd_set_component_origin_cpe(bearer, cv_href, cpe, trust_cert):
+        if bd_set_component_origin_cpe(bearer, origins_href, cpe, trust_cert):
             set_count += 1
             print(f"  Set CPE on {comp_name}: {cpe}", file=sys.stderr)
         else:
@@ -413,9 +408,9 @@ def main():
              "CUSTOM_COMPS)",
     )
     parser.add_argument(
-        "--no-custom-components", action="store_true",
-        help="Disable autocreate for all uploads (platform and external). "
-             "Overrides CUSTOM_COMPS scan mode.",
+        "--create-custom-components", action="store_true",
+        help="Enable autocreate to create custom components for unmatched "
+             "packages. Requires the Component Manager role.",
     )
     parser.add_argument(
         "--custom-extrepos-type", default="AOSP_REPOS",
@@ -544,7 +539,8 @@ def main():
 
     # Authenticate
     print("\nAuthenticating to Black Duck...", file=sys.stderr)
-    bearer = bd_authenticate(args.bd_api_token, args.bd_url, args.bd_trust_cert)
+    bearer, user_url = bd_authenticate(
+        args.bd_api_token, args.bd_url, args.bd_trust_cert)
     print("Authenticated successfully", file=sys.stderr)
 
     # Resolve remaining commit-hash packages via BD KB version-by-date
@@ -616,7 +612,17 @@ def main():
             print(f"Rewrote {rewritten} package PURLs to pkg:android",
                   file=sys.stderr)
 
-    autocreate = not args.no_custom_components
+    autocreate = args.create_custom_components
+
+    if autocreate and not args.skip_upload:
+        if bd_user_can_create_custom_components(
+                bearer, user_url, args.bd_trust_cert):
+            print("User has Component Manager role — custom components "
+                  "enabled", file=sys.stderr)
+        else:
+            print("WARNING: User does not have the Component Manager role "
+                  "— disabling custom component creation", file=sys.stderr)
+            autocreate = False
 
     version_href = None
     if not args.skip_upload:

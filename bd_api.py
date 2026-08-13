@@ -38,12 +38,60 @@ def _api_request(url, bearer, method="GET", data=None, accept=None,
 
 
 def bd_authenticate(api_token, bd_url, trust_cert=False):
-    url = f"{bd_url.rstrip('/')}/api/tokens/authenticate"
+    """Authenticate and return (bearer_token, user_url)."""
+    base = bd_url.rstrip("/")
+    url = f"{base}/api/tokens/authenticate"
     req = urllib.request.Request(url, data=b"", method="POST")
     req.add_header("Authorization", f"token {api_token}")
     req.add_header("Accept", "application/vnd.blackducksoftware.user-4+json")
     resp = urllib.request.urlopen(req, context=_ssl_ctx(trust_cert))
-    return json.loads(resp.read())["bearerToken"]
+    data = json.loads(resp.read())
+    bearer = data["bearerToken"]
+
+    user_url = None
+    for link in data.get("_meta", {}).get("links", []):
+        if link["rel"] == "user":
+            user_url = link["href"]
+            break
+    if not user_url:
+        user_url = f"{base}/api/currentuser"
+
+    return bearer, user_url
+
+
+def bd_get_user_roles(bearer, user_href, trust_cert=False):
+    """Get the role names assigned to a user."""
+    resp = _api_request(
+        user_href, bearer,
+        accept="application/vnd.blackducksoftware.user-4+json",
+        trust_cert=trust_cert)
+    data = json.loads(resp.read())
+
+    roles_url = None
+    for link in data.get("_meta", {}).get("links", []):
+        if link["rel"] == "roles":
+            roles_url = link["href"]
+            break
+    if not roles_url:
+        log.debug("No roles link in user representation")
+        return []
+
+    resp = _api_request(
+        roles_url, bearer,
+        accept="application/vnd.blackducksoftware.user-4+json",
+        trust_cert=trust_cert)
+    data = json.loads(resp.read())
+    return [item.get("name", "") for item in data.get("items", [])]
+
+
+def bd_user_can_create_custom_components(bearer, user_href, trust_cert=False):
+    """Check if the user has the Component Manager role."""
+    try:
+        roles = bd_get_user_roles(bearer, user_href, trust_cert)
+        return "Component Manager" in roles
+    except Exception as exc:
+        log.debug("Failed to check user roles: %s", exc)
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -497,24 +545,23 @@ def bd_get_bom_components(bearer, version_href, trust_cert=False):
     return items
 
 
-def bd_set_component_origin_cpe(bearer, component_version_href, cpe,
+def bd_set_component_origin_cpe(bearer, origins_href, cpe,
                                 trust_cert=False):
-    """Add a CPE origin to a custom component version. Returns True on success."""
-    url = f"{component_version_href}/origins"
+    """Add a CPE origin via a BOM component's origins URL. Returns True on success."""
     payload = json.dumps({
         "externalNamespace": "cpe",
         "externalId": cpe,
     }).encode()
     try:
         _api_request(
-            url, bearer, method="POST", data=payload,
+            origins_href, bearer, method="POST", data=payload,
             content_type="application/vnd.blackducksoftware"
                          ".component-detail-5+json",
             trust_cert=trust_cert)
         return True
     except urllib.error.HTTPError as exc:
         log.debug("Failed to set CPE origin %s on %s: %s",
-                  cpe, component_version_href, exc)
+                  cpe, origins_href, exc)
         return False
 
 

@@ -1,4 +1,4 @@
-# scan_aosp_project.py
+# scan_aosp_project.py v0.5
 
 Generates an SPDX 2.3 SBOM from AOSP (Android Open Source Project) build artifacts and uploads it to a Black Duck SCA server. Platform repos and external third-party packages are uploaded separately, each with their own matching strategy.
 
@@ -74,8 +74,8 @@ Black Duck connection settings can be provided as command-line arguments or envi
 --external-scan-modes M   Comma-separated scan modes or preset (see below)
 --custom-extrepos-type T  PURL type for external packages: AOSP_REPOS (default)
                           or OTHER (see below)
---no-custom-components    Disable autocreate for all uploads (platform and
-                          external), overriding CUSTOM_COMPS scan mode
+--create-custom-components  Enable autocreate to create custom components for
+                          unmatched packages (requires Component Manager role)
 --skip-upload             Generate SBOM files but do not upload to Black Duck
 --list-packages           List package classification and exit
 --debug                   Enable debug logging
@@ -94,7 +94,7 @@ The `--external-scan-modes` argument controls which resolution strategies are ap
 | `CPE_LOOKUP` | Resolve packages with CPE identifiers against the Black Duck KnowledgeBase |
 | `AOSP_REPOS` | Match packages to AOSP platform components in the Black Duck KnowledgeBase |
 | `SIG_SCAN` | Run Black Duck Detect signature scanning on unmatched external repos |
-| `CUSTOM_COMPS` | Enable autocreate to create custom components for unmatched packages |
+| `CUSTOM_COMPS` | Allow custom component creation for unmatched packages (also requires `--create-custom-components`) |
 
 **Presets:**
 
@@ -213,7 +213,7 @@ python3 scan_aosp_project.py \
 
 8. **Upload external SBOM** — uploads external packages in a 2-pass workflow:
    - Pass 1 (exploratory): uploads without autocreate to discover which packages match existing KnowledgeBase components. The exploratory codelocation is deleted afterward.
-   - Pass 2 (final): uploads with autocreate (if `CUSTOM_COMPS` mode is active) to create custom components for unmatched packages.
+   - Pass 2 (final): uploads with autocreate (if `CUSTOM_COMPS` mode is active and `--create-custom-components` is passed) to create custom components for unmatched packages.
 
 9. **Signature scan** — if `SIG_SCAN` mode is active, runs Black Duck Detect on unmatched external repos in batches of up to 4 GB, using `.bdignore` files to control which repos are included in each batch.
 
