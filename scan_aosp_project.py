@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.2"
+__version__ = "0.3"
 import uuid
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
@@ -594,18 +594,19 @@ def main():
 
     if args.custom_extrepos_type == "AOSP_REPOS":
         rewritten = 0
-        for tier_entries in packages_by_tier.values():
-            for entry in tier_entries:
-                pkg = entry["package"]
-                repo_path = entry["info"]["repo_path"]
-                pkg_name = f"platform-{repo_path.replace('/', '-')}"
-                aosp_purl = f"pkg:android/{pkg_name}@{args.android_version}"
-                for ref in pkg["externalRefs"]:
-                    if ref["referenceType"] == "purl":
-                        if ref["referenceLocator"] != aosp_purl:
-                            ref["referenceLocator"] = aosp_purl
-                            rewritten += 1
-                        break
+        for entry in packages_by_tier.get("custom", []):
+            if entry.get("bd_ref"):
+                continue
+            pkg = entry["package"]
+            repo_path = entry["info"]["repo_path"]
+            pkg_name = f"platform-{repo_path.replace('/', '-')}"
+            aosp_purl = f"pkg:android/{pkg_name}@{args.android_version}"
+            for ref in pkg["externalRefs"]:
+                if ref["referenceType"] == "purl":
+                    if ref["referenceLocator"] != aosp_purl:
+                        ref["referenceLocator"] = aosp_purl
+                        rewritten += 1
+                    break
         if rewritten:
             print(f"Rewrote {rewritten} package PURLs to pkg:android",
                   file=sys.stderr)
