@@ -104,7 +104,7 @@ def _sanitize_purl_version(version):
 
 
 def classify_package(metadata, repo_path, android_version,
-                     custom_purl="AOSP_REPOS"):
+                     unmatched_purl="AOSP_REPOS"):
     github_url = metadata.get("github_url")
     cpe = metadata.get("cpe")
     closest_version = metadata.get("closest_version")
@@ -168,7 +168,7 @@ def classify_package(metadata, repo_path, android_version,
         )
         return "github_commit", pkg, info
 
-    if custom_purl == "OTHER":
+    if unmatched_purl == "OTHER":
         safe_pkg_name = name.replace(" ", "-").replace("/", "-")
         pkg_version = _sanitize_purl_version(version or "unknown")
         purl = f"pkg:generic/{safe_pkg_name}@{pkg_version}"
@@ -218,7 +218,7 @@ def collect_platform_packages(repo_matches, android_version):
 
 
 def collect_external_packages(repo_matches, aosp_root, android_version,
-                              custom_purl="AOSP_REPOS"):
+                              unmatched_purl="AOSP_REPOS"):
     packages_by_tier = {
         "github_purl": [],
         "cpe_lookup": [],
@@ -240,7 +240,7 @@ def collect_external_packages(repo_matches, aosp_root, android_version,
             metadata = parse_metadata(metadata_path)
 
         tier, pkg, info = classify_package(metadata, repo_path, android_version,
-                                              custom_purl=custom_purl)
+                                              unmatched_purl=unmatched_purl)
 
         if pkg["SPDXID"] in seen_spdx_ids:
             suffix = repo_path.replace("/", "-").replace(".", "-")
@@ -253,7 +253,7 @@ def collect_external_packages(repo_matches, aosp_root, android_version,
 
 
 def collect_from_metadata_dir(repo_matches, metadata_dir, android_version,
-                              custom_purl="AOSP_REPOS"):
+                              unmatched_purl="AOSP_REPOS"):
     packages_by_tier = {
         "github_purl": [],
         "cpe_lookup": [],
@@ -281,7 +281,7 @@ def collect_from_metadata_dir(repo_matches, metadata_dir, android_version,
             log.debug("No metadata file for %s", sub_path)
 
         tier, pkg, info = classify_package(metadata, repo_path, android_version,
-                                              custom_purl=custom_purl)
+                                              unmatched_purl=unmatched_purl)
 
         if pkg["SPDXID"] in seen_spdx_ids:
             suffix = repo_path.replace("/", "-").replace(".", "-")

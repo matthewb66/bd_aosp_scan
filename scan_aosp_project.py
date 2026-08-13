@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.5"
+__version__ = "0.6"
 import uuid
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
@@ -412,9 +412,9 @@ def main():
              "packages. Requires the Component Manager role.",
     )
     parser.add_argument(
-        "--custom-extrepos-type", default="AOSP_REPOS",
+        "--unmatched-extrepos-type", default="AOSP_REPOS",
         choices=["AOSP_REPOS", "OTHER"],
-        help="PURL type for external custom components. AOSP_REPOS (default) "
+        help="PURL type for unmatched external packages. AOSP_REPOS (default) "
              "uses pkg:android/platform-* for all. OTHER uses pkg:github "
              "where available, pkg:generic otherwise.",
     )
@@ -478,11 +478,11 @@ def main():
     elif args.metadata_dir:
         packages_by_tier = collect_from_metadata_dir(
             repo_matches, args.metadata_dir, args.android_version,
-            custom_purl=args.custom_extrepos_type)
+            unmatched_purl=args.unmatched_extrepos_type)
     else:
         packages_by_tier = collect_external_packages(
             repo_matches, args.aosp_root, args.android_version,
-            custom_purl=args.custom_extrepos_type)
+            unmatched_purl=args.unmatched_extrepos_type)
 
     # Resolve GitHub versions for commit-hash packages
     if "GITHUB_REPOS" in scan_modes:
@@ -592,7 +592,7 @@ def main():
         else:
             print("SIG_SCAN: no unmatched repos to scan", file=sys.stderr)
 
-    if args.custom_extrepos_type == "AOSP_REPOS":
+    if args.unmatched_extrepos_type == "AOSP_REPOS":
         rewritten = 0
         for tier_entries in packages_by_tier.values():
             for entry in tier_entries:
@@ -606,6 +606,8 @@ def main():
                     if ref["referenceType"] == "purl":
                         if ref["referenceLocator"] != aosp_purl:
                             ref["referenceLocator"] = aosp_purl
+                            pkg["name"] = pkg_name
+                            pkg["versionInfo"] = args.android_version
                             rewritten += 1
                         break
         if rewritten:

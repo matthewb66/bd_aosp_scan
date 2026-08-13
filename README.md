@@ -1,4 +1,4 @@
-# scan_aosp_project.py v0.5
+# scan_aosp_project.py v0.6
 
 Generates an SPDX 2.3 SBOM from AOSP (Android Open Source Project) build artifacts and uploads it to a Black Duck SCA server. Platform repos and external third-party packages are uploaded separately, each with their own matching strategy.
 
@@ -72,7 +72,7 @@ Black Duck connection settings can be provided as command-line arguments or envi
 --github-token TOKEN      GitHub API token for higher rate limits (default: 60
                           requests/hour without a token)
 --external-scan-modes M   Comma-separated scan modes or preset (see below)
---custom-extrepos-type T  PURL type for external packages: AOSP_REPOS (default)
+--unmatched-extrepos-type T  PURL type for external packages: AOSP_REPOS (default)
                           or OTHER (see below)
 --create-custom-components  Enable autocreate to create custom components for
                           unmatched packages (requires Component Manager role)
@@ -106,9 +106,9 @@ The `--external-scan-modes` argument controls which resolution strategies are ap
 
 Modes can be combined: `--external-scan-modes 'AOSP_REPOS,CUSTOM_COMPS'`
 
-### External Repo Custom PURL Type
+### Unmatched External Repo PURL Type
 
-The `--custom-extrepos-type` argument controls the Package URL (PURL) scheme used for external packages in the SBOM:
+The `--unmatched-extrepos-type` argument controls the Package URL (PURL) scheme used for external packages in the SBOM:
 
 - **`AOSP_REPOS`** (default) — All external packages use `pkg:android/platform-{repo-path}@{android_version}`. This is appropriate when using the `AOSP_REPOS` scan mode, as it ensures all packages are identified as AOSP platform components and avoids unresolvable entries appearing in Match Review.
 
@@ -143,7 +143,7 @@ python3 scan_aosp_project.py \
     --bd-project "My-AOSP-Project" \
     --bd-version "16.0.0_r4" \
     --aosp-root /path/to/aosp \
-    --custom-extrepos-type OTHER \
+    --unmatched-extrepos-type OTHER \
     --github-token "$GITHUB_TOKEN"
 ```
 
