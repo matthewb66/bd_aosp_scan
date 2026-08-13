@@ -645,7 +645,7 @@ def main():
     )
 
     # Set CPE on all custom components after both uploads complete
-    if version_href:
+    if version_href and autocreate:
         all_cpe_map = {}
         if autocreate:
             all_cpe_map["Google Android"] = cpe
