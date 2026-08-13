@@ -47,6 +47,7 @@ def bd_authenticate(api_token, bd_url, trust_cert=False):
     resp = urllib.request.urlopen(req, context=_ssl_ctx(trust_cert))
     data = json.loads(resp.read())
     bearer = data["bearerToken"]
+    log.debug("Auth response keys: %s", list(data.keys()))
 
     user_url = None
     for link in data.get("_meta", {}).get("links", []):
@@ -55,40 +56,52 @@ def bd_authenticate(api_token, bd_url, trust_cert=False):
             break
     if not user_url:
         user_url = f"{base}/api/currentuser"
+    log.debug("User URL: %s", user_url)
 
     return bearer, user_url
 
 
 def bd_get_user_roles(bearer, user_href, trust_cert=False):
-    """Get the role names assigned to a user."""
+    """Get the role names assigned to a user (direct + inherited)."""
     resp = _api_request(
         user_href, bearer,
         accept="application/vnd.blackducksoftware.user-4+json",
         trust_cert=trust_cert)
     data = json.loads(resp.read())
 
-    roles_url = None
-    for link in data.get("_meta", {}).get("links", []):
-        if link["rel"] == "roles":
-            roles_url = link["href"]
-            break
-    if not roles_url:
-        log.debug("No roles link in user representation")
-        return []
+    links = {l["rel"]: l["href"]
+             for l in data.get("_meta", {}).get("links", [])}
+    log.debug("User links: %s", list(links.keys()))
 
-    resp = _api_request(
-        roles_url, bearer,
-        accept="application/vnd.blackducksoftware.user-4+json",
-        trust_cert=trust_cert)
-    data = json.loads(resp.read())
-    return [item.get("name", "") for item in data.get("items", [])]
+    all_roles = []
+    for rel in ("roles", "inherited-roles"):
+        url = links.get(rel)
+        if not url:
+            continue
+        try:
+            resp = _api_request(
+                url, bearer,
+                accept="application/vnd.blackducksoftware.user-4+json",
+                trust_cert=trust_cert)
+            rdata = json.loads(resp.read())
+            names = [item.get("name", "") for item in rdata.get("items", [])]
+            log.debug("User %s: %s", rel, names)
+            all_roles.extend(names)
+        except Exception as exc:
+            log.debug("Failed to fetch %s: %s", rel, exc)
+
+    return all_roles
 
 
 def bd_user_can_create_custom_components(bearer, user_href, trust_cert=False):
     """Check if the user has the Component Manager role."""
     try:
         roles = bd_get_user_roles(bearer, user_href, trust_cert)
-        return "Component Manager" in roles
+        log.debug("All user roles: %s", roles)
+        for role in roles:
+            if "component" in role.lower() and "manager" in role.lower():
+                return True
+        return False
     except Exception as exc:
         log.debug("Failed to check user roles: %s", exc)
         return False

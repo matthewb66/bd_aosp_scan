@@ -35,7 +35,8 @@ def _gh_api_request(url, github_token=None):
     try:
         resp = urllib.request.urlopen(req, timeout=15)
         return json.loads(resp.read().decode())
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError,
+            ConnectionError, OSError) as exc:
         log.debug("GitHub API error for %s: %s", url, exc)
         return None
 
@@ -134,8 +135,14 @@ def _resolve_one_github(entry, github_token):
         return entry, None, None
 
     owner, repo = parts
-    tag, pub_date = gh_find_tag_near_date(owner, repo, last_upgrade,
-                                          github_token)
+    try:
+        tag, pub_date = gh_find_tag_near_date(owner, repo, last_upgrade,
+                                              github_token)
+    except Exception as exc:
+        log.debug("GitHub resolution error for %s: %s", github_path, exc)
+        print(f"  WARNING: GitHub resolution failed for {github_path}: {exc}",
+              file=sys.stderr, flush=True)
+        return entry, None, None
     return entry, tag, pub_date
 
 
