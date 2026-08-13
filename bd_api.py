@@ -536,23 +536,22 @@ def bd_get_bom_components(bearer, version_href, trust_cert=False):
     return items
 
 
-def bd_set_component_origin_cpe(bearer, origins_href, cpe,
-                                trust_cert=False):
-    """Add a CPE origin via a BOM component's origins URL. Returns True on success."""
-    payload = json.dumps({
-        "externalNamespace": "cpe",
-        "externalId": cpe,
-    }).encode()
+def bd_set_component_version_cpe(bearer, version_href, cpe,
+                                 trust_cert=False):
+    """Set CPE on a custom component version via PUT. Returns True on success."""
+    payload = json.dumps({"cpe": cpe}).encode()
     try:
         _api_request(
-            origins_href, bearer, method="POST", data=payload,
+            version_href, bearer, method="PUT", data=payload,
             content_type="application/vnd.blackducksoftware"
                          ".component-detail-5+json",
+            accept="application/vnd.blackducksoftware"
+                   ".component-detail-5+json",
             trust_cert=trust_cert)
         return True
     except urllib.error.HTTPError as exc:
-        log.debug("Failed to set CPE origin %s on %s: %s",
-                  cpe, origins_href, exc)
+        log.debug("Failed to set CPE %s on %s: %s",
+                  cpe, version_href, exc)
         return False
 
 

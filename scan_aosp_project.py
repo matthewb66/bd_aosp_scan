@@ -24,7 +24,7 @@ from bd_api import (
     bd_get_bom_components,
     bd_get_import_events,
     bd_poll_scan,
-    bd_set_component_origin_cpe,
+    bd_set_component_version_cpe,
     bd_upload_spdx,
 )
 from detect_scan import run_sigscan_external
@@ -124,9 +124,10 @@ def _upload_and_map(packages, bearer, bd_url, bd_project, bd_version,
 
 
 def _set_custom_component_cpes(cpe_map, bearer, version_href, trust_cert):
-    """Set CPE origins on BOM components that match entries in cpe_map.
+    """Set CPE on custom component versions that match entries in cpe_map.
 
     cpe_map: {component_name: cpe_string}
+    Uses PUT /api/components/{id}/versions/{verId} with {"cpe": "..."}.
     """
     if not cpe_map:
         return 0
@@ -147,9 +148,10 @@ def _set_custom_component_cpes(cpe_map, bearer, version_href, trust_cert):
             print(f"  No origins link for {comp_name}", file=sys.stderr)
             continue
 
-        version_href = origins_href.rsplit("/origins", 1)[0]
+        comp_ver_href = origins_href.rsplit("/origins", 1)[0]
         cpe = cpe_map[comp_name]
-        if bd_set_component_origin_cpe(bearer, version_href, cpe, trust_cert):
+        if bd_set_component_version_cpe(bearer, comp_ver_href, cpe,
+                                        trust_cert):
             set_count += 1
             print(f"  Set CPE on {comp_name}: {cpe}", file=sys.stderr)
         else:
