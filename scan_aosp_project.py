@@ -23,8 +23,10 @@ from bd_api import (
     bd_delete_codelocation,
     bd_find_or_create_project,
     bd_find_or_create_version,
+    bd_get_bom_components,
     bd_get_import_events,
     bd_poll_scan,
+    bd_set_component_origin_cpe,
     bd_upload_spdx,
     _get_codeloc_href,
 )
@@ -122,6 +124,42 @@ def _upload_and_map(packages, bearer, bd_url, bd_project, bd_version,
           file=sys.stderr)
 
     return events
+
+
+def _set_custom_component_cpes(cpe_map, bearer, version_href, trust_cert):
+    """Set CPE origins on BOM components that match entries in cpe_map.
+
+    cpe_map: {component_name: cpe_string}
+    """
+    if not cpe_map:
+        return 0
+
+    print("\nSetting CPE on custom components...", file=sys.stderr)
+    bom_components = bd_get_bom_components(bearer, version_href, trust_cert)
+
+    set_count = 0
+    for bom_comp in bom_components:
+        comp_name = bom_comp.get("componentName", "")
+        if comp_name not in cpe_map:
+            continue
+
+        links = {l["rel"]: l["href"]
+                 for l in bom_comp.get("_meta", {}).get("links", [])}
+        cv_href = links.get("componentVersion")
+        if not cv_href:
+            print(f"  No componentVersion link for {comp_name}",
+                  file=sys.stderr)
+            continue
+
+        cpe = cpe_map[comp_name]
+        if bd_set_component_origin_cpe(bearer, cv_href, cpe, trust_cert):
+            set_count += 1
+            print(f"  Set CPE on {comp_name}: {cpe}", file=sys.stderr)
+        else:
+            print(f"  Failed to set CPE on {comp_name}", file=sys.stderr)
+
+    print(f"CPE set on {set_count}/{len(cpe_map)} components", file=sys.stderr)
+    return set_count
 
 
 def run_platform_upload(platform_packages, bearer, bd_url, bd_project,
@@ -574,11 +612,12 @@ def main():
 
     autocreate = not args.no_custom_components
 
+    version_href = None
     if not args.skip_upload:
         print("\nEnsuring project version exists...", file=sys.stderr)
         project_href = bd_find_or_create_project(
             bearer, args.bd_project, args.bd_url, args.bd_trust_cert)
-        bd_find_or_create_version(
+        version_href = bd_find_or_create_version(
             bearer, project_href, args.bd_version, args.bd_url,
             args.bd_trust_cert)
         print(f"Project version ready: {args.bd_project} / {args.bd_version}",
@@ -592,6 +631,12 @@ def main():
         autocreate=autocreate,
     )
 
+    # Set CPE on Google Android custom component after platform upload
+    if autocreate and version_href:
+        _set_custom_component_cpes(
+            {"Google Android": cpe}, bearer, version_href,
+            args.bd_trust_cert)
+
     # Upload external packages (2-pass exploratory workflow)
     ext_autocreate = ("CUSTOM_COMPS" in scan_modes) and autocreate
     run_upload_workflow(
@@ -600,6 +645,19 @@ def main():
         skip_upload=args.skip_upload,
         autocreate=ext_autocreate,
     )
+
+    # Set CPE on external custom components after external upload
+    if ext_autocreate and version_href:
+        ext_cpe_map = {}
+        for tier_entries in packages_by_tier.values():
+            for entry in tier_entries:
+                pkg = entry["package"]
+                for ref in pkg.get("externalRefs", []):
+                    if ref["referenceType"] == "cpe23Type":
+                        ext_cpe_map[pkg["name"]] = ref["referenceLocator"]
+                        break
+        _set_custom_component_cpes(
+            ext_cpe_map, bearer, version_href, args.bd_trust_cert)
 
 
 if __name__ == "__main__":

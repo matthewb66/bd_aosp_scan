@@ -472,6 +472,53 @@ def _get_codeloc_href(scan_summary):
 
 
 # ---------------------------------------------------------------------------
+# BOM component queries and CPE management
+# ---------------------------------------------------------------------------
+
+def bd_get_bom_components(bearer, version_href, trust_cert=False):
+    """Return all BOM components for a project version (handles pagination)."""
+    items = []
+    limit = 1000
+    offset = 0
+    while True:
+        url = f"{version_href}/components?limit={limit}&offset={offset}"
+        resp = _api_request(
+            url, bearer,
+            accept="application/vnd.blackducksoftware"
+                   ".bill-of-materials-6+json",
+            trust_cert=trust_cert)
+        data = json.loads(resp.read())
+        page = data.get("items", [])
+        items.extend(page)
+        total = data.get("totalCount", len(items))
+        if len(items) >= total or not page:
+            break
+        offset += limit
+    return items
+
+
+def bd_set_component_origin_cpe(bearer, component_version_href, cpe,
+                                trust_cert=False):
+    """Add a CPE origin to a custom component version. Returns True on success."""
+    url = f"{component_version_href}/origins"
+    payload = json.dumps({
+        "externalNamespace": "cpe",
+        "externalId": cpe,
+    }).encode()
+    try:
+        _api_request(
+            url, bearer, method="POST", data=payload,
+            content_type="application/vnd.blackducksoftware"
+                         ".component-detail-5+json",
+            trust_cert=trust_cert)
+        return True
+    except urllib.error.HTTPError as exc:
+        log.debug("Failed to set CPE origin %s on %s: %s",
+                  cpe, component_version_href, exc)
+        return False
+
+
+# ---------------------------------------------------------------------------
 # KB search (GitHub, AOSP, version-by-date)
 # ---------------------------------------------------------------------------
 
