@@ -374,20 +374,34 @@ def bd_upload_spdx(bearer, sbom_content, bd_url, autocreate=False,
     req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
     ctx = _ssl_ctx(trust_cert)
     log.debug("SPDX upload URL: %s", url)
-    try:
-        resp = urllib.request.urlopen(req, context=ctx)
-    except urllib.error.HTTPError as e:
-        error_body = ""
+    max_retries = 3
+    for attempt in range(max_retries):
         try:
-            error_body = e.read().decode("utf-8", errors="replace")
-        except Exception:
-            pass
-        print(f"SPDX upload failed: HTTP {e.code} {e.reason}\n"
-              f"URL: {url}\nResponse: {error_body[:2000]}",
-              file=sys.stderr)
-        raise
-    scan_url = resp.headers.get("Location", "")
-    return resp.getcode(), scan_url
+            if attempt > 0:
+                req = urllib.request.Request(url, data=body, method="POST")
+                req.add_header("Authorization", f"Bearer {bearer}")
+                req.add_header("Content-Type",
+                               f"multipart/form-data; boundary={boundary}")
+            resp = urllib.request.urlopen(req, context=ctx)
+            scan_url = resp.headers.get("Location", "")
+            return resp.getcode(), scan_url
+        except urllib.error.HTTPError as e:
+            if e.code >= 500 and attempt < max_retries - 1:
+                wait = 10 * (attempt + 1)
+                print(f"SPDX upload failed: HTTP {e.code} — "
+                      f"retrying in {wait}s (attempt {attempt + 1}/"
+                      f"{max_retries})", file=sys.stderr)
+                time.sleep(wait)
+                continue
+            error_body = ""
+            try:
+                error_body = e.read().decode("utf-8", errors="replace")
+            except Exception:
+                pass
+            print(f"SPDX upload failed: HTTP {e.code} {e.reason}\n"
+                  f"URL: {url}\nResponse: {error_body[:2000]}",
+                  file=sys.stderr)
+            raise
 
 
 def bd_poll_scan(bearer, scan_url, bd_url, trust_cert=False,
