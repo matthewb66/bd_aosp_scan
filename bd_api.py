@@ -33,6 +33,7 @@ def _api_request(url, bearer, method="GET", data=None, accept=None,
     if content_type:
         req.add_header("Content-Type", content_type)
     ctx = _ssl_ctx(trust_cert)
+    log.debug("API Request: %s\ndata: %s\nbearer: %s", url, data, bearer)
     resp = urllib.request.urlopen(req, context=ctx, timeout=timeout)
     return resp
 
