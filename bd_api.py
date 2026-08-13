@@ -55,7 +55,17 @@ def bd_authenticate(api_token, bd_url, trust_cert=False):
             user_url = link["href"]
             break
     if not user_url:
-        user_url = f"{base}/api/currentuser"
+        for candidate in (f"{base}/api/current-user",
+                          f"{base}/api/currentuser"):
+            try:
+                _api_request(
+                    candidate, bearer,
+                    accept="application/vnd.blackducksoftware.user-4+json",
+                    trust_cert=trust_cert)
+                user_url = candidate
+                break
+            except Exception:
+                continue
     log.debug("User URL: %s", user_url)
 
     return bearer, user_url
