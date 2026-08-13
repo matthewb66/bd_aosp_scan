@@ -1,4 +1,4 @@
-# scan_aosp_project.py v0.7
+# scan_aosp_project.py v0.9
 
 Generates an SPDX 2.3 SBOM from AOSP (Android Open Source Project) build artifacts and uploads it to a Black Duck SCA server. Platform repos and external third-party packages are uploaded separately, each with their own matching strategy.
 
@@ -71,7 +71,8 @@ Black Duck connection settings can be provided as command-line arguments or envi
 --bd-trust-cert           Trust the Black Duck server's SSL certificate
 --github-token TOKEN      GitHub API token for higher rate limits (default: 60
                           requests/hour without a token)
---external-scan-modes M   Comma-separated scan modes or preset (see below)
+--external-scan-modes M   Comma-separated scan modes or preset (see below).
+                          Default: NONE (platform repos only)
 --unmatched-extrepos-type T  PURL type for external packages: AOSP_REPOS (default)
                           or OTHER (see below)
 --create-custom-components  Enable autocreate to create custom components for
@@ -112,7 +113,7 @@ The `--unmatched-extrepos-type` argument controls the Package URL (PURL) scheme 
 
 - **`AOSP_REPOS`** (default) — All external packages use `pkg:android/platform-{repo-path}@{android_version}`. This is appropriate when using the `AOSP_REPOS` scan mode, as it ensures all packages are identified as AOSP platform components and avoids unresolvable entries appearing in Match Review.
 
-- **`OTHER`** — Packages with a known GitHub upstream use `pkg:github/{owner}/{repo}@{version}`. Packages without GitHub info use `pkg:generic/{name}@{version}`. This is appropriate when using `GITHUB_REPOS`, `KB_LOOKUP`, or `CPE_LOOKUP` modes to match against the original upstream projects.
+- **`OTHER`** — Packages with a known GitHub upstream use `pkg:github/{owner}/{repo}@{version}`. Packages with a CPE but no GitHub info use `pkg:generic/{name}@{version}`. Packages with no identification at all fall back to `pkg:android/platform-{repo-path}@{android_version}`. This is appropriate when using `GITHUB_REPOS`, `KB_LOOKUP`, or `CPE_LOOKUP` modes to match against the original upstream projects.
 
 ### Examples
 
@@ -147,7 +148,7 @@ python3 scan_aosp_project.py \
     --github-token "$GITHUB_TOKEN"
 ```
 
-**Platform repos only (no external processing):**
+**Platform repos only (no external processing — this is the default):**
 
 ```bash
 python3 scan_aosp_project.py \
@@ -155,8 +156,7 @@ python3 scan_aosp_project.py \
     --repo-list repo-list.txt \
     --android-version android-16.0.0_r4 \
     --bd-project "My-AOSP-Project" \
-    --bd-version "16.0.0_r4" \
-    --external-scan-modes 'NONE'
+    --bd-version "16.0.0_r4"
 ```
 
 **Generate SBOM files without uploading:**

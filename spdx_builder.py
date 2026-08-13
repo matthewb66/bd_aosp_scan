@@ -103,8 +103,7 @@ def _sanitize_purl_version(version):
     return re.sub(r'[^a-zA-Z0-9._-]', '-', version)
 
 
-def classify_package(metadata, repo_path, android_version,
-                     unmatched_purl="AOSP_REPOS"):
+def classify_package(metadata, repo_path, android_version):
     github_url = metadata.get("github_url")
     cpe = metadata.get("cpe")
     closest_version = metadata.get("closest_version")
@@ -168,20 +167,11 @@ def classify_package(metadata, repo_path, android_version,
         )
         return "github_commit", pkg, info
 
-    if unmatched_purl == "OTHER":
-        safe_pkg_name = name.replace(" ", "-").replace("/", "-")
-        pkg_version = _sanitize_purl_version(version or "unknown")
-        purl = f"pkg:generic/{safe_pkg_name}@{pkg_version}"
-        pkg = build_spdx_package(
-            spdx_id, name, version or "NOASSERTION",
-            github_url or "NOASSERTION", license_spdx, purl=purl,
-        )
-    else:
-        purl = f"pkg:android/{pkg_name}@{android_version}"
-        pkg = build_spdx_package(
-            spdx_id, pkg_name, android_version,
-            github_url or "NOASSERTION", license_spdx, purl=purl,
-        )
+    purl = f"pkg:android/{pkg_name}@{android_version}"
+    pkg = build_spdx_package(
+        spdx_id, pkg_name, android_version,
+        github_url or "NOASSERTION", license_spdx, purl=purl,
+    )
     return "custom", pkg, info
 
 
@@ -217,8 +207,7 @@ def collect_platform_packages(repo_matches, android_version):
     return packages
 
 
-def collect_external_packages(repo_matches, aosp_root, android_version,
-                              unmatched_purl="AOSP_REPOS"):
+def collect_external_packages(repo_matches, aosp_root, android_version):
     packages_by_tier = {
         "github_purl": [],
         "cpe_lookup": [],
@@ -239,8 +228,7 @@ def collect_external_packages(repo_matches, aosp_root, android_version,
             metadata_path = os.path.join(aosp_root, repo_path, "METADATA")
             metadata = parse_metadata(metadata_path)
 
-        tier, pkg, info = classify_package(metadata, repo_path, android_version,
-                                              unmatched_purl=unmatched_purl)
+        tier, pkg, info = classify_package(metadata, repo_path, android_version)
 
         if pkg["SPDXID"] in seen_spdx_ids:
             suffix = repo_path.replace("/", "-").replace(".", "-")
@@ -252,8 +240,7 @@ def collect_external_packages(repo_matches, aosp_root, android_version,
     return packages_by_tier
 
 
-def collect_from_metadata_dir(repo_matches, metadata_dir, android_version,
-                              unmatched_purl="AOSP_REPOS"):
+def collect_from_metadata_dir(repo_matches, metadata_dir, android_version):
     packages_by_tier = {
         "github_purl": [],
         "cpe_lookup": [],
@@ -280,8 +267,7 @@ def collect_from_metadata_dir(repo_matches, metadata_dir, android_version,
         else:
             log.debug("No metadata file for %s", sub_path)
 
-        tier, pkg, info = classify_package(metadata, repo_path, android_version,
-                                              unmatched_purl=unmatched_purl)
+        tier, pkg, info = classify_package(metadata, repo_path, android_version)
 
         if pkg["SPDXID"] in seen_spdx_ids:
             suffix = repo_path.replace("/", "-").replace(".", "-")

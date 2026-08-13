@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.7"
+__version__ = "0.9"
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
 from bd_api import (
@@ -63,7 +63,7 @@ def parse_scan_modes(raw):
     (ALL, DEFAULT, NONE).  Returns a frozenset of active mode strings.
     """
     if raw is None:
-        return frozenset(PRESET_MODES["DEFAULT"])
+        return frozenset()
 
     raw = raw.strip().upper()
     if raw in PRESET_MODES:
@@ -361,8 +361,7 @@ def main():
         "--external-scan-modes", default=None,
         help="Comma-separated scan modes: GITHUB_REPOS,KB_LOOKUP,CPE_LOOKUP,"
              "AOSP_REPOS,SIG_SCAN,CUSTOM_COMPS. Presets: ALL, DEFAULT, NONE. "
-             "Default: DEFAULT (GITHUB_REPOS,KB_LOOKUP,CPE_LOOKUP,"
-             "CUSTOM_COMPS)",
+             "Default: NONE (platform repos only).",
     )
     parser.add_argument(
         "--create-custom-components", action="store_true",
@@ -435,12 +434,10 @@ def main():
         print("External scanning disabled (mode NONE)", file=sys.stderr)
     elif args.metadata_dir:
         packages_by_tier = collect_from_metadata_dir(
-            repo_matches, args.metadata_dir, args.android_version,
-            unmatched_purl=args.unmatched_extrepos_type)
+            repo_matches, args.metadata_dir, args.android_version)
     else:
         packages_by_tier = collect_external_packages(
-            repo_matches, args.aosp_root, args.android_version,
-            unmatched_purl=args.unmatched_extrepos_type)
+            repo_matches, args.aosp_root, args.android_version)
 
     # Resolve GitHub versions for commit-hash packages
     if "GITHUB_REPOS" in scan_modes:
@@ -573,6 +570,7 @@ def main():
                   f"pkg:android", file=sys.stderr)
 
     autocreate = args.create_custom_components
+    ext_autocreate = ("CUSTOM_COMPS" in scan_modes) and autocreate
 
     version_href = None
     if not args.skip_upload:
@@ -598,19 +596,20 @@ def main():
         packages_by_tier, bearer, args.bd_url,
         args.bd_project, args.bd_version, args.bd_trust_cert,
         skip_upload=args.skip_upload,
-        autocreate=autocreate,
+        autocreate=ext_autocreate,
     )
 
-    # Set CPE on all custom components after both uploads complete
+    # Set CPE on custom components after uploads complete
     if version_href and autocreate:
         all_cpe_map = {"Google Android": cpe}
-        for tier_entries in packages_by_tier.values():
-            for entry in tier_entries:
-                pkg = entry["package"]
-                for ref in pkg.get("externalRefs", []):
-                    if ref["referenceType"] == "cpe23Type":
-                        all_cpe_map[pkg["name"]] = ref["referenceLocator"]
-                        break
+        if ext_autocreate:
+            for tier_entries in packages_by_tier.values():
+                for entry in tier_entries:
+                    pkg = entry["package"]
+                    for ref in pkg.get("externalRefs", []):
+                        if ref["referenceType"] == "cpe23Type":
+                            all_cpe_map[pkg["name"]] = ref["referenceLocator"]
+                            break
         _set_custom_component_cpes(
             all_cpe_map, bearer, version_href, args.bd_trust_cert)
 
