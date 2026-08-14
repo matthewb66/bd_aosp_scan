@@ -90,11 +90,47 @@ def _extract_version_from_archive_url(url):
     return None
 
 
-def parse_metadata(metadata_path):
+def parse_android_bp_license(bp_path):
+    """Extract SPDX license expression from an Android.bp license_kinds declaration."""
+    try:
+        with open(bp_path) as f:
+            content = f.read()
+    except (OSError, IOError):
+        return None
+
+    m = re.search(r'license_kinds:\s*\[(.*?)\]', content, re.DOTALL)
+    if not m:
+        return None
+
+    kinds = re.findall(r'"([^"]+)"', m.group(1))
+    spdx_ids = []
+    for kind in kinds:
+        if kind.startswith("SPDX-license-identifier-"):
+            spdx_id = kind[len("SPDX-license-identifier-"):]
+            if spdx_id:
+                spdx_ids.append(spdx_id)
+
+    if not spdx_ids:
+        return None
+
+    seen = []
+    for sid in spdx_ids:
+        if sid not in seen:
+            seen.append(sid)
+
+    if len(seen) == 1:
+        return seen[0]
+    return " AND ".join(seen)
+
+
+def parse_metadata(metadata_path, bp_path=None):
     result = {"name": None, "version": None, "cpe": None, "github_url": None,
               "closest_version": None, "top_version": None,
-              "license_type": None, "all_versions": [],
-              "last_upgrade_date": None}
+              "license_type": None, "license_spdx": None,
+              "all_versions": [], "last_upgrade_date": None}
+
+    if bp_path:
+        result["license_spdx"] = parse_android_bp_license(bp_path)
 
     try:
         with open(metadata_path) as f:

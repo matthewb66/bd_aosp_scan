@@ -123,7 +123,8 @@ def classify_package(metadata, repo_path, android_version):
     version = metadata.get("version")
     name = metadata.get("name") or repo_path.split("/")[-1]
     license_type = metadata.get("license_type")
-    license_spdx = LICENSE_MAP.get(license_type, "NOASSERTION")
+    license_spdx = (metadata.get("license_spdx")
+                     or LICENSE_MAP.get(license_type, "NOASSERTION"))
 
     safe_name = re.sub(r'[^a-zA-Z0-9._-]', '-', name)
     spdx_id = f"SPDXRef-{safe_name}"
@@ -246,10 +247,12 @@ def collect_external_packages(repo_matches, aosp_root, android_version):
         metadata = {"name": None, "version": None, "cpe": None,
                     "github_url": None, "closest_version": None,
                     "top_version": None, "license_type": None,
-                    "all_versions": []}
+                    "license_spdx": None, "all_versions": []}
         if aosp_root:
             metadata_path = os.path.join(aosp_root, repo_path, "METADATA")
-            metadata = parse_metadata(metadata_path)
+            bp_path = os.path.join(aosp_root, repo_path, "Android.bp")
+            bp_file = bp_path if os.path.isfile(bp_path) else None
+            metadata = parse_metadata(metadata_path, bp_path=bp_file)
 
         tier, pkg, info = classify_package(metadata, repo_path, android_version)
 
@@ -279,16 +282,21 @@ def collect_from_metadata_dir(repo_matches, metadata_dir, android_version):
         sub_path = repo_path.split("/", 1)[1]
 
         metadata_path = os.path.join(metadata_dir, sub_path, "METADATA")
+        bp_path = os.path.join(metadata_dir, sub_path, "Android.bp")
 
         metadata = {"name": None, "version": None, "cpe": None,
                     "github_url": None, "closest_version": None,
                     "top_version": None, "license_type": None,
-                    "all_versions": []}
+                    "license_spdx": None, "all_versions": []}
 
+        bp_file = bp_path if os.path.isfile(bp_path) else None
         if os.path.isfile(metadata_path):
-            metadata = parse_metadata(metadata_path)
+            metadata = parse_metadata(metadata_path, bp_path=bp_file)
         else:
             log.debug("No metadata file for %s", sub_path)
+            if bp_file:
+                from aosp_metadata import parse_android_bp_license
+                metadata["license_spdx"] = parse_android_bp_license(bp_file)
 
         tier, pkg, info = classify_package(metadata, repo_path, android_version)
 
