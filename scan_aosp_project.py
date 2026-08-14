@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.14"
+__version__ = "0.15"
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
 from bd_api import (
@@ -160,25 +160,30 @@ def _set_custom_component_cpes(cpe_map, bearer, version_href, trust_cert):
     return set_count
 
 
+def _write_sbom_file(packages, bd_project, bd_version, doc_suffix):
+    """Write an SPDX SBOM to a local JSON file (used when --skip-upload)."""
+    doc_namespace = (f"https://aosp.spdx.org/sbom/"
+                     f"{bd_project}-{bd_version}-{doc_suffix}")
+    doc = build_spdx_document(
+        packages, f"{bd_project}-{bd_version}-{doc_suffix}", doc_namespace)
+    output_path = f"{bd_project}-{bd_version}-{doc_suffix}-sbom.spdx.json"
+    with open(output_path, "w") as f:
+        json.dump(doc, f, indent=2)
+    print(f"{doc_suffix.title()} SBOM written to {output_path} "
+          f"(upload skipped)", file=sys.stderr)
+
+
 def run_platform_upload(platform_packages, bearer, bd_url, bd_project,
                         bd_version, trust_cert, skip_upload=False,
                         autocreate=True):
-    """Upload platform repo packages as a single SPDX SBOM (no exploratory pass)."""
+    """Upload platform repo packages as a single SPDX SBOM."""
     if not platform_packages:
         print("No platform packages to upload", file=sys.stderr)
         return
 
     if skip_upload:
-        doc_namespace = (f"https://aosp.spdx.org/sbom/"
-                         f"{bd_project}-{bd_version}-platform")
-        doc = build_spdx_document(
-            platform_packages, f"{bd_project}-{bd_version}-platform",
-            doc_namespace)
-        output_path = f"{bd_project}-{bd_version}-platform-sbom.spdx.json"
-        with open(output_path, "w") as f:
-            json.dump(doc, f, indent=2)
-        print(f"Platform SBOM written to {output_path} (upload skipped)",
-              file=sys.stderr)
+        _write_sbom_file(platform_packages, bd_project, bd_version,
+                         "platform")
         return
 
     events = _upload_and_map(
@@ -206,15 +211,7 @@ def run_upload_workflow(packages_by_tier, bearer, bd_url, bd_project,
         return
 
     if skip_upload:
-        doc_namespace = (f"https://aosp.spdx.org/sbom/"
-                         f"{bd_project}-{bd_version}-external")
-        doc = build_spdx_document(
-            all_packages, f"{bd_project}-{bd_version}-external", doc_namespace)
-        output_path = f"{bd_project}-{bd_version}-external-sbom.spdx.json"
-        with open(output_path, "w") as f:
-            json.dump(doc, f, indent=2)
-        print(f"External SBOM written to {output_path} (upload skipped)",
-              file=sys.stderr)
+        _write_sbom_file(all_packages, bd_project, bd_version, "external")
         return
 
     events = _upload_and_map(

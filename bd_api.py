@@ -11,6 +11,7 @@ import urllib.request
 import uuid
 
 from aosp_metadata import _is_commit_hash
+from version_utils import normalize_version, version_matches
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +34,6 @@ def _api_request(url, bearer, method="GET", data=None, accept=None,
     if content_type:
         req.add_header("Content-Type", content_type)
     ctx = _ssl_ctx(trust_cert)
-    # log.debug("API Request: %s\ndata: %s\nbearer: %s", url, data, bearer)
     resp = urllib.request.urlopen(req, context=ctx, timeout=timeout)
     return resp
 
@@ -479,30 +479,6 @@ def bd_find_or_create_version(bearer, project_href, version_name, bd_url,
     return location
 
 
-def bd_map_codelocation(bearer, codeloc_href, version_href, trust_cert=False):
-    payload = json.dumps({"mappedProjectVersion": version_href}).encode()
-    _api_request(
-        codeloc_href, bearer, method="PUT", data=payload,
-        content_type="application/json", trust_cert=trust_cert,
-    )
-
-
-def bd_delete_codelocation(bearer, codeloc_href, trust_cert=False):
-    try:
-        _api_request(codeloc_href, bearer, method="DELETE",
-                     trust_cert=trust_cert)
-    except urllib.error.HTTPError as e:
-        if e.code != 404:
-            raise
-
-
-def _get_codeloc_href(scan_summary):
-    for link in scan_summary.get("_meta", {}).get("links", []):
-        if link["rel"] == "codelocation":
-            return link["href"]
-    return None
-
-
 # ---------------------------------------------------------------------------
 # BOM component queries and CPE management
 # ---------------------------------------------------------------------------
@@ -647,29 +623,6 @@ def _bd_get_first_origin(bearer, comp_url, ver_id, trust_cert=False):
     return None
 
 
-def _bd_find_component_by_android(bearer, aosp_name, bd_url, trust_cert=False):
-    q = urllib.request.quote(f"android:{aosp_name}")
-    url = f"{bd_url.rstrip('/')}/api/components?q={q}&limit=5"
-    try:
-        resp = _api_request(url, bearer,
-                            accept="application/vnd.blackducksoftware"
-                                   ".component-detail-5+json",
-                            trust_cert=trust_cert)
-        data = json.loads(resp.read().decode())
-    except Exception as exc:
-        log.debug("BD AOSP component search failed for %s: %s",
-                  aosp_name, exc)
-        return None, None
-
-    if data.get("totalCount", 0) == 0:
-        return None, None
-
-    comp_url = data["items"][0].get("component")
-    if comp_url:
-        return comp_url, comp_url.rsplit("/", 1)[-1]
-    return None, None
-
-
 def _bd_find_version_by_name(bearer, comp_url, version_name,
                              bd_url, trust_cert=False):
     q = urllib.request.quote(version_name)
@@ -696,8 +649,6 @@ def _bd_find_version_by_name(bearer, comp_url, version_name,
 def _bd_find_version_fuzzy(bearer, comp_url, target_version,
                            bd_url, trust_cert=False):
     """Search BD KB component versions with normalized matching."""
-    from version_utils import normalize_version, version_matches
-
     url = f"{comp_url}/versions?limit=100"
     try:
         resp = _api_request(url, bearer,

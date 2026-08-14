@@ -3,10 +3,12 @@
 import logging
 import os
 import re
-import uuid
 from datetime import datetime, timezone
 
-from aosp_metadata import _has_github, _is_commit_hash, parse_github_path, parse_metadata
+from aosp_metadata import (
+    _has_github, _is_commit_hash, parse_android_bp_license,
+    parse_github_path, parse_metadata,
+)
 
 log = logging.getLogger(__name__)
 
@@ -300,7 +302,6 @@ def collect_from_metadata_dir(repo_matches, metadata_dir, android_version):
         else:
             log.debug("No metadata file for %s", sub_path)
             if bp_file:
-                from aosp_metadata import parse_android_bp_license
                 metadata["license_spdx"] = parse_android_bp_license(bp_file)
 
         tier, pkg, info = classify_package(metadata, repo_path, android_version)

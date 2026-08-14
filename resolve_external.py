@@ -1,4 +1,4 @@
-"""External package resolution modes: GitHub tag, BD KB version-by-date, CPE, AOSP repo PURL."""
+"""External package resolution modes: GitHub tag, BD KB version-by-date, CPE."""
 
 import json
 import logging
@@ -7,20 +7,36 @@ import sys
 import threading
 import urllib.error
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
 from bd_api import (
-    _api_request,
     _bd_find_component_by_github,
-    _bd_find_version_by_name,
     _bd_find_version_fuzzy,
     _bd_find_version_near_date,
     _bd_get_first_origin,
-    _follow_origins,
     bd_cpe_lookup,
 )
+from spdx_builder import _extract_cpe_version
+from version_utils import find_best_tag_match
 
 log = logging.getLogger(__name__)
+
+
+def _add_bd_refs(pkg, comp_id, ver_id, origin_id=None):
+    """Append BlackDuck component/version/origin external refs to a package."""
+    pkg["externalRefs"].extend([
+        {"referenceCategory": "OTHER",
+         "referenceType": "BlackDuck-Component",
+         "referenceLocator": comp_id},
+        {"referenceCategory": "OTHER",
+         "referenceType": "BlackDuck-ComponentVersion",
+         "referenceLocator": ver_id},
+    ])
+    if origin_id:
+        pkg["externalRefs"].append(
+            {"referenceCategory": "OTHER",
+             "referenceType": "BlackDuck-ComponentOrigin",
+             "referenceLocator": origin_id})
 
 
 # ---------------------------------------------------------------------------
@@ -231,8 +247,6 @@ def _gh_list_tags(owner, repo, github_token=None, max_pages=3):
 def gh_find_tag_by_version(owner, repo, target_version,
                            github_token=None):
     """Find the GitHub tag that best matches target_version."""
-    from version_utils import find_best_tag_match
-
     tags = _gh_list_tags(owner, repo, github_token)
     if not tags:
         return None
@@ -242,8 +256,6 @@ def gh_find_tag_by_version(owner, repo, target_version,
 def _resolve_one_cpe_github(entry, bearer, bd_url, trust_cert,
                             github_token):
     """Resolve a tier 1c package via GitHub tags, then BD KB fuzzy."""
-    from spdx_builder import _extract_cpe_version
-
     info = entry["info"]
     github_path = info.get("github_path")
     cpe = info.get("cpe")
@@ -343,19 +355,8 @@ def resolve_cpe_github_versions(packages_by_tier, bearer, bd_url,
                     "ver_id": result["ver_id"],
                     "origin_id": result.get("origin_id"),
                 }
-                pkg["externalRefs"].extend([
-                    {"referenceCategory": "OTHER",
-                     "referenceType": "BlackDuck-Component",
-                     "referenceLocator": result["comp_id"]},
-                    {"referenceCategory": "OTHER",
-                     "referenceType": "BlackDuck-ComponentVersion",
-                     "referenceLocator": result["ver_id"]},
-                ])
-                if result.get("origin_id"):
-                    pkg["externalRefs"].append(
-                        {"referenceCategory": "OTHER",
-                         "referenceType": "BlackDuck-ComponentOrigin",
-                         "referenceLocator": result["origin_id"]})
+                _add_bd_refs(pkg, result["comp_id"], result["ver_id"],
+                             result.get("origin_id"))
                 entry["bd_ref"] = bd_ref
 
             verified += 1
@@ -451,19 +452,8 @@ def resolve_bd_kb_versions(packages_by_tier, bearer, bd_url,
             bd_ref = {"comp_id": result["comp_id"],
                       "ver_id": result["ver_id"],
                       "origin_id": result["origin_id"]}
-            pkg["externalRefs"].extend([
-                {"referenceCategory": "OTHER",
-                 "referenceType": "BlackDuck-Component",
-                 "referenceLocator": result["comp_id"]},
-                {"referenceCategory": "OTHER",
-                 "referenceType": "BlackDuck-ComponentVersion",
-                 "referenceLocator": result["ver_id"]},
-            ])
-            if result["origin_id"]:
-                pkg["externalRefs"].append(
-                    {"referenceCategory": "OTHER",
-                     "referenceType": "BlackDuck-ComponentOrigin",
-                     "referenceLocator": result["origin_id"]})
+            _add_bd_refs(pkg, result["comp_id"], result["ver_id"],
+                         result["origin_id"])
 
             entry["bd_ref"] = bd_ref
             info["resolved_kb_version"] = result["ver_name"]
@@ -546,23 +536,11 @@ def resolve_cpe_packages(packages_by_tier, bearer, bd_url, trust_cert):
                 if r["referenceCategory"] == "OTHER"
             }
             if "BlackDuck-Component" not in existing_bd_types:
-                pkg["externalRefs"].extend([
-                    {"referenceCategory": "OTHER",
-                     "referenceType": "BlackDuck-Component",
-                     "referenceLocator": bd_ref["comp_id"]},
-                    {"referenceCategory": "OTHER",
-                     "referenceType": "BlackDuck-ComponentVersion",
-                     "referenceLocator": bd_ref["ver_id"]},
-                ])
-                if bd_ref.get("origin_id"):
-                    pkg["externalRefs"].append(
-                        {"referenceCategory": "OTHER",
-                         "referenceType": "BlackDuck-ComponentOrigin",
-                         "referenceLocator": bd_ref["origin_id"]})
+                _add_bd_refs(pkg, bd_ref["comp_id"], bd_ref["ver_id"],
+                             bd_ref.get("origin_id"))
 
             cpe = info.get("cpe")
             if cpe:
-                from spdx_builder import _extract_cpe_version
                 cpe_ver = _extract_cpe_version(cpe)
                 if cpe_ver:
                     pkg["versionInfo"] = cpe_ver
