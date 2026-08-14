@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.12"
+__version__ = "0.13"
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
 from bd_api import (

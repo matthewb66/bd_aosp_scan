@@ -560,6 +560,20 @@ def resolve_cpe_packages(packages_by_tier, bearer, bd_url, trust_cert):
                         {"referenceCategory": "OTHER",
                          "referenceType": "BlackDuck-ComponentOrigin",
                          "referenceLocator": bd_ref["origin_id"]})
+
+            cpe = info.get("cpe")
+            if cpe:
+                from spdx_builder import _extract_cpe_version
+                cpe_ver = _extract_cpe_version(cpe)
+                if cpe_ver:
+                    pkg["versionInfo"] = cpe_ver
+                    safe_name = pkg_name.replace(" ", "-").replace("/", "-")
+                    new_purl = f"pkg:generic/{safe_name}@{cpe_ver}"
+                    for ref in pkg["externalRefs"]:
+                        if ref["referenceType"] == "purl":
+                            ref["referenceLocator"] = new_purl
+                            break
+
             entry["bd_ref"] = bd_ref
             resolved += 1
             print(f"  CPE resolved: {pkg_name} -> "
