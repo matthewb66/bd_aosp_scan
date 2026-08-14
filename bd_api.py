@@ -539,16 +539,30 @@ def bd_get_bom_components(bearer, version_href, trust_cert=False):
 
 def bd_set_component_version_cpe(bearer, version_href, cpe,
                                  trust_cert=False):
-    """Set CPE on a custom component version via PUT. Returns True on success."""
-    payload = json.dumps({"cpe": cpe}).encode()
+    """Set CPE on a custom component version via PUT.
+
+    PUT requires the full component version representation (at minimum
+    versionName and license), so we GET first, add the cpe field, and
+    PUT the updated object back.  Returns True on success.
+    """
+    ct = ("application/vnd.blackducksoftware"
+          ".component-detail-5+json")
+    try:
+        resp = _api_request(
+            version_href, bearer, method="GET",
+            accept=ct, trust_cert=trust_cert)
+        current = json.loads(resp.read())
+    except (urllib.error.HTTPError, Exception) as exc:
+        log.debug("Failed to GET component version %s: %s",
+                  version_href, exc)
+        return False
+
+    current["cpe"] = cpe
+    payload = json.dumps(current).encode()
     try:
         _api_request(
             version_href, bearer, method="PUT", data=payload,
-            content_type="application/vnd.blackducksoftware"
-                         ".component-detail-5+json",
-            accept="application/vnd.blackducksoftware"
-                   ".component-detail-5+json",
-            trust_cert=trust_cert)
+            content_type=ct, accept=ct, trust_cert=trust_cert)
         return True
     except urllib.error.HTTPError as exc:
         log.debug("Failed to set CPE %s on %s: %s",
