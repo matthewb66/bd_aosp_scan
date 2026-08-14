@@ -454,6 +454,10 @@ def resolve_bd_kb_versions(packages_by_tier, bearer, bd_url,
                       "origin_id": result["origin_id"]}
             _add_bd_refs(pkg, result["comp_id"], result["ver_id"],
                          result["origin_id"])
+            pkg["externalRefs"] = [
+                r for r in pkg["externalRefs"]
+                if r["referenceType"] != "purl"
+            ]
 
             entry["bd_ref"] = bd_ref
             info["resolved_kb_version"] = result["ver_name"]
@@ -539,17 +543,16 @@ def resolve_cpe_packages(packages_by_tier, bearer, bd_url, trust_cert):
                 _add_bd_refs(pkg, bd_ref["comp_id"], bd_ref["ver_id"],
                              bd_ref.get("origin_id"))
 
+            pkg["externalRefs"] = [
+                r for r in pkg["externalRefs"]
+                if r["referenceType"] != "purl"
+            ]
+
             cpe = info.get("cpe")
             if cpe:
                 cpe_ver = _extract_cpe_version(cpe)
                 if cpe_ver:
                     pkg["versionInfo"] = cpe_ver
-                    safe_name = pkg_name.replace(" ", "-").replace("/", "-")
-                    new_purl = f"pkg:generic/{safe_name}@{cpe_ver}"
-                    for ref in pkg["externalRefs"]:
-                        if ref["referenceType"] == "purl":
-                            ref["referenceLocator"] = new_purl
-                            break
 
             entry["bd_ref"] = bd_ref
             resolved += 1
