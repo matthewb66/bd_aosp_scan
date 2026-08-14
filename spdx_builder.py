@@ -142,8 +142,6 @@ def classify_package(metadata, repo_path, android_version):
         "last_upgrade_date": metadata.get("last_upgrade_date"),
     }
 
-    pkg_name = f"platform-{repo_path.replace('/', '-')}"
-
     if github_path and closest_version and not _is_commit_hash(closest_version):
         purl = f"pkg:github/{github_path}@{closest_version}"
         pkg = build_spdx_package(
@@ -191,9 +189,16 @@ def classify_package(metadata, repo_path, android_version):
         )
         return "github_commit", pkg, info
 
-    purl = f"pkg:android/{pkg_name}@{android_version}"
+    best_version = None
+    for v in [closest_version, top_version, version]:
+        if v and not _is_commit_hash(v):
+            best_version = v
+            break
+    safe_pkg_name = name.replace(" ", "-").replace("/", "-")
+    ver_for_purl = _sanitize_purl_version(best_version or "unknown")
+    purl = f"pkg:generic/{safe_pkg_name}@{ver_for_purl}"
     pkg = build_spdx_package(
-        spdx_id, pkg_name, android_version,
+        spdx_id, name, best_version or "NOASSERTION",
         github_url or "NOASSERTION", license_spdx, purl=purl,
     )
     return "custom", pkg, info

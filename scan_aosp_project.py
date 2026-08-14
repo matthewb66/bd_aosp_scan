@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.13"
+__version__ = "0.14"
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
 from bd_api import (
@@ -29,7 +29,6 @@ from bd_api import (
 )
 from detect_scan import run_sigscan_external
 from resolve_external import (
-    resolve_aosp_repo_packages,
     resolve_bd_kb_versions,
     resolve_cpe_github_versions,
     resolve_cpe_packages,
@@ -46,12 +45,11 @@ from spdx_builder import (
 log = logging.getLogger(__name__)
 
 VALID_SCAN_MODES = {
-    "GITHUB_REPOS", "KB_LOOKUP", "CPE_LOOKUP", "AOSP_REPOS", "SIG_SCAN",
-    "CUSTOM_COMPS",
+    "GITHUB_REPOS", "KB_LOOKUP", "CPE_LOOKUP", "SIG_SCAN", "CUSTOM_COMPS",
 }
 PRESET_MODES = {
     "DEFAULT": {"GITHUB_REPOS", "KB_LOOKUP", "CPE_LOOKUP", "CUSTOM_COMPS"},
-    "ALL": {"GITHUB_REPOS", "KB_LOOKUP", "CPE_LOOKUP", "AOSP_REPOS", "SIG_SCAN",
+    "ALL": {"GITHUB_REPOS", "KB_LOOKUP", "CPE_LOOKUP", "SIG_SCAN",
             "CUSTOM_COMPS"},
     "NONE": set(),
 }
@@ -361,20 +359,13 @@ def main():
     parser.add_argument(
         "--external-scan-modes", default=None,
         help="Comma-separated scan modes: GITHUB_REPOS,KB_LOOKUP,CPE_LOOKUP,"
-             "AOSP_REPOS,SIG_SCAN,CUSTOM_COMPS. Presets: ALL, DEFAULT, NONE. "
+             "SIG_SCAN,CUSTOM_COMPS. Presets: ALL, DEFAULT, NONE. "
              "Default: NONE (platform repos only).",
     )
     parser.add_argument(
         "--create-custom-components", action="store_true",
         help="Enable autocreate to create custom components for unmatched "
              "packages. Requires the Component Manager role.",
-    )
-    parser.add_argument(
-        "--unmatched-extrepos-type", default="AOSP_REPOS",
-        choices=["AOSP_REPOS", "OTHER"],
-        help="PURL type for unmatched external packages. AOSP_REPOS (default) "
-             "uses pkg:android/platform-* for all. OTHER uses pkg:github "
-             "where available, pkg:generic otherwise.",
     )
     parser.add_argument(
         "--debug", action="store_true",
@@ -523,15 +514,6 @@ def main():
             print(f"CPE pre-resolved {cpe_resolved} packages",
                   file=sys.stderr)
 
-    # Resolve packages via AOSP repo PURLs
-    if "AOSP_REPOS" in scan_modes:
-        aosp_resolved = resolve_aosp_repo_packages(
-            packages_by_tier, args.android_version, bearer,
-            args.bd_url, args.bd_trust_cert)
-        if aosp_resolved:
-            print(f"AOSP repo-resolved {aosp_resolved} packages",
-                  file=sys.stderr)
-
     # Signature scan via Detect CLI
     if "SIG_SCAN" in scan_modes:
         if not args.aosp_root:
@@ -556,28 +538,6 @@ def main():
             )
         else:
             print("SIG_SCAN: no unmatched repos to scan", file=sys.stderr)
-
-    if args.unmatched_extrepos_type == "AOSP_REPOS":
-        rewritten = 0
-        for tier_entries in packages_by_tier.values():
-            for entry in tier_entries:
-                if entry.get("bd_ref"):
-                    continue
-                pkg = entry["package"]
-                repo_path = entry["info"]["repo_path"]
-                pkg_name = f"platform-{repo_path.replace('/', '-')}"
-                aosp_purl = f"pkg:android/{pkg_name}@{args.android_version}"
-                for ref in pkg["externalRefs"]:
-                    if ref["referenceType"] == "purl":
-                        if ref["referenceLocator"] != aosp_purl:
-                            ref["referenceLocator"] = aosp_purl
-                            pkg["name"] = pkg_name
-                            pkg["versionInfo"] = args.android_version
-                            rewritten += 1
-                        break
-        if rewritten:
-            print(f"Rewrote {rewritten} unmatched package PURLs to "
-                  f"pkg:android", file=sys.stderr)
 
     autocreate = args.create_custom_components
     ext_autocreate = ("CUSTOM_COMPS" in scan_modes) and autocreate

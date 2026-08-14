@@ -1,4 +1,4 @@
-# scan_aosp_project.py v0.13
+# scan_aosp_project.py v0.14
 
 Generates an SPDX 2.3 SBOM from AOSP (Android Open Source Project) build artifacts and uploads it to a Black Duck SCA server. Platform repos and external third-party packages are uploaded separately, each with their own matching strategy.
 
@@ -73,8 +73,6 @@ Black Duck connection settings can be provided as command-line arguments or envi
                           requests/hour without a token)
 --external-scan-modes M   Comma-separated scan modes or preset (see below).
                           Default: NONE (platform repos only)
---unmatched-extrepos-type T  PURL type for external packages: AOSP_REPOS (default)
-                          or OTHER (see below)
 --create-custom-components  Enable autocreate to create custom components for
                           unmatched packages (requires Component Manager role)
 --skip-upload             Generate SBOM files but do not upload to Black Duck
@@ -93,7 +91,6 @@ The `--external-scan-modes` argument controls which resolution strategies are ap
 | `GITHUB_REPOS` | Resolve commit-hash packages to tagged releases via the GitHub API |
 | `KB_LOOKUP` | Look up commit-hash packages in the Black Duck KnowledgeBase by component and release date |
 | `CPE_LOOKUP` | Resolve packages with CPE identifiers against the Black Duck KnowledgeBase |
-| `AOSP_REPOS` | Match packages to AOSP platform components in the Black Duck KnowledgeBase |
 | `SIG_SCAN` | Run Black Duck Detect signature scanning on unmatched external repos |
 | `CUSTOM_COMPS` | Allow custom component creation for unmatched packages (also requires `--create-custom-components`) |
 
@@ -105,30 +102,9 @@ The `--external-scan-modes` argument controls which resolution strategies are ap
 | `ALL` | All modes |
 | `NONE` | No external processing (platform repos are still uploaded) |
 
-Modes can be combined: `--external-scan-modes 'AOSP_REPOS,CUSTOM_COMPS'`
-
-### Unmatched External Repo PURL Type
-
-The `--unmatched-extrepos-type` argument controls the Package URL (PURL) scheme used for external packages in the SBOM:
-
-- **`AOSP_REPOS`** (default) — All external packages use `pkg:android/platform-{repo-path}@{android_version}`. This is appropriate when using the `AOSP_REPOS` scan mode, as it ensures all packages are identified as AOSP platform components and avoids unresolvable entries appearing in Match Review.
-
-- **`OTHER`** — Packages with a known GitHub upstream use `pkg:github/{owner}/{repo}@{version}`. Packages with a CPE but no GitHub info use `pkg:generic/{name}@{version}`. Packages with no identification at all fall back to `pkg:android/platform-{repo-path}@{android_version}`. This is appropriate when using `GITHUB_REPOS`, `KB_LOOKUP`, or `CPE_LOOKUP` modes to match against the original upstream projects.
+Modes can be combined: `--external-scan-modes 'GITHUB_REPOS,CPE_LOOKUP,CUSTOM_COMPS'`
 
 ### Examples
-
-**Upload platform and external repos using AOSP component matching:**
-
-```bash
-python3 scan_aosp_project.py \
-    --module-info out/target/product/generic_arm64/module-info.json \
-    --repo-list repo-list.txt \
-    --android-version android-16.0.0_r4 \
-    --bd-project "My-AOSP-Project" \
-    --bd-version "16.0.0_r4" \
-    --metadata-dir metadata_files \
-    --external-scan-modes 'AOSP_REPOS'
-```
 
 **Full resolution with GitHub, KB, and CPE lookup:**
 
@@ -143,8 +119,7 @@ python3 scan_aosp_project.py \
     --android-version android-16.0.0_r4 \
     --bd-project "My-AOSP-Project" \
     --bd-version "16.0.0_r4" \
-    --aosp-root /path/to/aosp \
-    --unmatched-extrepos-type OTHER \
+    --metadata-dir metadata_files \
     --github-token "$GITHUB_TOKEN"
 ```
 
@@ -205,8 +180,6 @@ python3 scan_aosp_project.py \
    - `GITHUB_REPOS`: queries the GitHub API to find tagged releases near the repo's last upgrade date, promoting commit-hash packages to tagged versions
    - `KB_LOOKUP`: queries the Black Duck KnowledgeBase to find component versions by release date
    - `CPE_LOOKUP`: resolves CPE identifiers against the Black Duck KnowledgeBase
-   - `AOSP_REPOS`: matches packages to AOSP platform components in the Black Duck KnowledgeBase
-
 6. **Ensure project version** — creates the Black Duck project and version via the REST API if they do not already exist.
 
 7. **Upload platform SBOM** — uploads platform repo packages in a single pass.
