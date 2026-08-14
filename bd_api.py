@@ -431,7 +431,8 @@ def bd_get_import_events(bearer, scan_url, bd_url, trust_cert=False):
 # Project / version / codelocation management
 # ---------------------------------------------------------------------------
 
-def bd_find_or_create_project(bearer, project_name, bd_url, trust_cert=False):
+def bd_find_or_create_project(bearer, project_name, bd_url, trust_cert=False,
+                              version_name=None):
     base = bd_url.rstrip("/")
     url = (f"{base}/api/projects?q=name:{urllib.request.quote(project_name)}"
            f"&limit=10")
@@ -441,7 +442,14 @@ def bd_find_or_create_project(bearer, project_name, bd_url, trust_cert=False):
         if item.get("name") == project_name:
             return item["_meta"]["href"]
 
-    payload = json.dumps({"name": project_name}).encode()
+    body = {"name": project_name}
+    if version_name:
+        body["versionRequest"] = {
+            "versionName": version_name,
+            "phase": "DEVELOPMENT",
+            "distribution": "INTERNAL",
+        }
+    payload = json.dumps(body).encode()
     resp = _api_request(
         f"{base}/api/projects", bearer, method="POST", data=payload,
         content_type="application/json", trust_cert=trust_cert,

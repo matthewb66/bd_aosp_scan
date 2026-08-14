@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.16"
+__version__ = "0.17"
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
 from bd_api import (
@@ -543,7 +543,8 @@ def main():
     if not args.skip_upload:
         print("\nEnsuring project version exists...", file=sys.stderr)
         project_href = bd_find_or_create_project(
-            bearer, args.bd_project, args.bd_url, args.bd_trust_cert)
+            bearer, args.bd_project, args.bd_url, args.bd_trust_cert,
+            version_name=args.bd_version)
         version_href = bd_find_or_create_version(
             bearer, project_href, args.bd_version, args.bd_url,
             args.bd_trust_cert)
