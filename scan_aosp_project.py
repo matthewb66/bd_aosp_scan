@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 
-__version__ = "0.9"
+__version__ = "0.11"
 
 from aosp_metadata import extract_installed_paths, map_paths_to_repos, parse_repo_list
 from bd_api import (
@@ -31,6 +31,7 @@ from detect_scan import run_sigscan_external
 from resolve_external import (
     resolve_aosp_repo_packages,
     resolve_bd_kb_versions,
+    resolve_cpe_github_versions,
     resolve_cpe_packages,
     resolve_github_versions,
 )
@@ -496,6 +497,15 @@ def main():
     bearer, _ = bd_authenticate(
         args.bd_api_token, args.bd_url, args.bd_trust_cert)
     print("Authenticated successfully", file=sys.stderr)
+
+    # Verify CPE-derived GitHub versions (tier 1c)
+    if "GITHUB_REPOS" in scan_modes:
+        cpe_gh_verified = resolve_cpe_github_versions(
+            packages_by_tier, bearer, args.bd_url, args.bd_trust_cert,
+            github_token=args.github_token)
+        if cpe_gh_verified:
+            print(f"CPE-GitHub verified {cpe_gh_verified} packages",
+                  file=sys.stderr)
 
     # Resolve remaining commit-hash packages via BD KB version-by-date
     if "KB_LOOKUP" in scan_modes:

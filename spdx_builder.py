@@ -103,6 +103,18 @@ def _sanitize_purl_version(version):
     return re.sub(r'[^a-zA-Z0-9._-]', '-', version)
 
 
+def _extract_cpe_version(cpe_str):
+    if not cpe_str:
+        return None
+    m = re.match(r'cpe:2\.3:[^:]+:[^:]+:[^:]+:([^:]+)', cpe_str)
+    if m and m.group(1) not in ('*', '-', ''):
+        return m.group(1)
+    m = re.match(r'cpe:/[^:]+:[^:]+:[^:]+:([^:]*)', cpe_str)
+    if m and m.group(1):
+        return m.group(1)
+    return None
+
+
 def classify_package(metadata, repo_path, android_version):
     github_url = metadata.get("github_url")
     cpe = metadata.get("cpe")
@@ -146,6 +158,17 @@ def classify_package(metadata, repo_path, android_version):
             github_url, license_spdx, purl=purl, cpe=cpe,
         )
         info["version_source"] = "top_version"
+        return "github_purl", pkg, info
+
+    cpe_version = _extract_cpe_version(cpe) if cpe else None
+    if github_path and cpe_version:
+        tag = cpe_version if cpe_version.startswith("v") else f"v{cpe_version}"
+        purl = f"pkg:github/{github_path}@{tag}"
+        pkg = build_spdx_package(
+            spdx_id, name, tag,
+            github_url, license_spdx, purl=purl, cpe=cpe,
+        )
+        info["version_source"] = "cpe_version"
         return "github_purl", pkg, info
 
     if cpe:
@@ -200,7 +223,7 @@ def collect_platform_packages(repo_matches, android_version):
         purl = f"pkg:android/{pkg_name}@{android_version}"
         pkg = build_spdx_package(
             spdx_id, pkg_name, android_version,
-            "NOASSERTION", "NOASSERTION", purl=purl,
+            "NOASSERTION", "Apache-2.0", purl=purl,
         )
         packages.append(pkg)
 

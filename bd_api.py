@@ -33,7 +33,7 @@ def _api_request(url, bearer, method="GET", data=None, accept=None,
     if content_type:
         req.add_header("Content-Type", content_type)
     ctx = _ssl_ctx(trust_cert)
-    log.debug("API Request: %s\ndata: %s\nbearer: %s", url, data, bearer)
+    # log.debug("API Request: %s\ndata: %s\nbearer: %s", url, data, bearer)
     resp = urllib.request.urlopen(req, context=ctx, timeout=timeout)
     return resp
 
@@ -207,17 +207,9 @@ def _get_component_name(bearer, comp_id, bd_url, trust_cert):
 
 
 def _component_name_matches(comp_name, pkg_name):
-    cn = comp_name.lower()
-    pn = pkg_name.lower()
-    if cn == pn:
-        return True
-    if pn in cn or cn in pn:
-        return True
-    pn_clean = re.sub(r'[-_]', '', pn)
-    cn_clean = re.sub(r'[-_]', '', cn)
-    if pn_clean in cn_clean or cn_clean in pn_clean:
-        return True
-    return False
+    cn = re.sub(r'[-_ ]', '', comp_name.lower())
+    pn = re.sub(r'[-_ ]', '', pkg_name.lower())
+    return cn == pn
 
 
 def _search_component_versions(bearer, comp_id, target_version, bd_url,
@@ -698,4 +690,32 @@ def _bd_find_version_by_name(bearer, comp_url, version_name,
             ver_id = ver_href.rsplit("/", 1)[-1] if ver_href else None
             if ver_id:
                 return v["versionName"], ver_id
+    return None, None
+
+
+def _bd_find_version_fuzzy(bearer, comp_url, target_version,
+                           bd_url, trust_cert=False):
+    """Search BD KB component versions with normalized matching."""
+    from version_utils import normalize_version, version_matches
+
+    url = f"{comp_url}/versions?limit=100"
+    try:
+        resp = _api_request(url, bearer,
+                            accept="application/vnd.blackducksoftware"
+                                   ".component-detail-5+json",
+                            trust_cert=trust_cert)
+        data = json.loads(resp.read().decode())
+    except Exception as exc:
+        log.debug("BD version fuzzy search failed for %s: %s",
+                  comp_url, exc)
+        return None, None
+
+    for v in data.get("items", []):
+        ver_name = v.get("versionName", "")
+        norm = normalize_version(ver_name)
+        if norm and version_matches(norm, target_version):
+            ver_href = v.get("_meta", {}).get("href", "")
+            ver_id = ver_href.rsplit("/", 1)[-1] if ver_href else None
+            if ver_id:
+                return ver_name, ver_id
     return None, None

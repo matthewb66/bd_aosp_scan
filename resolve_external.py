@@ -14,6 +14,7 @@ from bd_api import (
     _bd_find_component_by_android,
     _bd_find_component_by_github,
     _bd_find_version_by_name,
+    _bd_find_version_fuzzy,
     _bd_find_version_near_date,
     _bd_get_first_origin,
     _follow_origins,
@@ -204,6 +205,168 @@ def resolve_github_versions(packages_by_tier, github_token=None):
     print(f"  Promoted {promoted} packages to github_purl tier, "
           f"{len(remaining)} remain as github_commit", file=sys.stderr)
     return promoted
+
+
+# ---------------------------------------------------------------------------
+# CPE-derived GitHub version verification
+# ---------------------------------------------------------------------------
+
+def _gh_list_tags(owner, repo, github_token=None, max_pages=3):
+    """Fetch tag names from GitHub API (up to max_pages * 100 tags)."""
+    base = "https://api.github.com"
+    tags = []
+    for page in range(1, max_pages + 1):
+        url = f"{base}/repos/{owner}/{repo}/tags?per_page=100&page={page}"
+        data = _gh_api_request(url, github_token)
+        if data is None or len(data) == 0:
+            break
+        for tag_obj in data:
+            name = tag_obj.get("name", "")
+            if name:
+                tags.append(name)
+        if len(data) < 100:
+            break
+    return tags
+
+
+def gh_find_tag_by_version(owner, repo, target_version,
+                           github_token=None):
+    """Find the GitHub tag that best matches target_version."""
+    from version_utils import find_best_tag_match
+
+    tags = _gh_list_tags(owner, repo, github_token)
+    if not tags:
+        return None
+    return find_best_tag_match(tags, target_version)
+
+
+def _resolve_one_cpe_github(entry, bearer, bd_url, trust_cert,
+                            github_token):
+    """Resolve a tier 1c package via GitHub tags, then BD KB fuzzy."""
+    from spdx_builder import _extract_cpe_version
+
+    info = entry["info"]
+    github_path = info.get("github_path")
+    cpe = info.get("cpe")
+
+    cpe_version = _extract_cpe_version(cpe) if cpe else None
+    if not github_path or not cpe_version:
+        return entry, None
+
+    parts = github_path.split("/", 1)
+    if len(parts) != 2:
+        return entry, None
+    owner, repo = parts
+
+    tag = gh_find_tag_by_version(owner, repo, cpe_version,
+                                github_token=github_token)
+    if tag:
+        return entry, {"source": "github_tag", "tag": tag}
+
+    comp_url, comp_id = _bd_find_component_by_github(
+        bearer, github_path, bd_url, trust_cert)
+    if comp_url:
+        ver_name, ver_id = _bd_find_version_fuzzy(
+            bearer, comp_url, cpe_version, bd_url, trust_cert)
+        if ver_name and ver_id:
+            origin_id = _bd_get_first_origin(
+                bearer, comp_url, ver_id, trust_cert)
+            return entry, {
+                "source": "bd_kb_fuzzy",
+                "tag": ver_name,
+                "comp_id": comp_id,
+                "ver_id": ver_id,
+                "origin_id": origin_id,
+            }
+
+    return entry, None
+
+
+def resolve_cpe_github_versions(packages_by_tier, bearer, bd_url,
+                                trust_cert=False, github_token=None):
+    """Verify/correct tier 1c packages (github_purl from CPE version).
+
+    Searches GitHub tags and BD KB to find the actual version tag,
+    replacing the initial best-guess v-prefixed version.
+    """
+    work_list = [
+        entry for entry in packages_by_tier.get("github_purl", [])
+        if entry["info"].get("version_source") == "cpe_version"
+    ]
+
+    if not work_list:
+        return 0
+
+    total = len(work_list)
+    print(f"\nVerifying CPE-derived GitHub versions for {total} "
+          f"packages...", file=sys.stderr)
+
+    done_count = 0
+    lock = threading.Lock()
+
+    def on_done(future):
+        nonlocal done_count
+        with lock:
+            done_count += 1
+            if done_count % 5 == 0 or done_count == total:
+                print(f"  CPE-GitHub verification: {done_count}/{total} done",
+                      file=sys.stderr, flush=True)
+
+    futures = []
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        for entry in work_list:
+            f = executor.submit(_resolve_one_cpe_github, entry, bearer,
+                                bd_url, trust_cert, github_token)
+            f.add_done_callback(on_done)
+            futures.append(f)
+
+    verified = 0
+    for f in futures:
+        entry, result = f.result()
+        if result:
+            info = entry["info"]
+            pkg = entry["package"]
+            github_path = info["github_path"]
+            tag = result["tag"]
+            old_tag = pkg["versionInfo"]
+
+            purl = f"pkg:github/{github_path}@{tag}"
+            for ref in pkg["externalRefs"]:
+                if ref["referenceType"] == "purl":
+                    ref["referenceLocator"] = purl
+                    break
+            pkg["versionInfo"] = tag
+            info["version_source"] = f"cpe_version_{result['source']}"
+
+            if result.get("comp_id"):
+                bd_ref = {
+                    "comp_id": result["comp_id"],
+                    "ver_id": result["ver_id"],
+                    "origin_id": result.get("origin_id"),
+                }
+                pkg["externalRefs"].extend([
+                    {"referenceCategory": "OTHER",
+                     "referenceType": "BlackDuck-Component",
+                     "referenceLocator": result["comp_id"]},
+                    {"referenceCategory": "OTHER",
+                     "referenceType": "BlackDuck-ComponentVersion",
+                     "referenceLocator": result["ver_id"]},
+                ])
+                if result.get("origin_id"):
+                    pkg["externalRefs"].append(
+                        {"referenceCategory": "OTHER",
+                         "referenceType": "BlackDuck-ComponentOrigin",
+                         "referenceLocator": result["origin_id"]})
+                entry["bd_ref"] = bd_ref
+
+            verified += 1
+            change = f" (was {old_tag})" if old_tag != tag else ""
+            print(f"  {info['name']}: {tag} via "
+                  f"{result['source']}{change}", file=sys.stderr)
+
+    print(f"  Verified {verified}/{total} CPE-derived versions",
+          file=sys.stderr)
+    return verified
 
 
 # ---------------------------------------------------------------------------

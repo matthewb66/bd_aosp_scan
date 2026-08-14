@@ -1,4 +1,4 @@
-# scan_aosp_project.py v0.9
+# scan_aosp_project.py v0.11
 
 Generates an SPDX 2.3 SBOM from AOSP (Android Open Source Project) build artifacts and uploads it to a Black Duck SCA server. Platform repos and external third-party packages are uploaded separately, each with their own matching strategy.
 
