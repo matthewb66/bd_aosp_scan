@@ -15,7 +15,7 @@ AOSP comprises:
     - Many forks reference only a commit ID (no tag/version)
     - Several packages only have a CPE
     - Several packages have no usable information about upstream origin
-    -	METADATA is inconsistent (not all files are the same format) and inaccurate in many cases
+    - METADATA is inconsistent (not all files are the same format) and inaccurate in many cases
 
 Not all repos are built/included in an Android release.
 
@@ -26,6 +26,8 @@ Android Security Bulletins are provided by Google referencing CVEs but all are c
 A complete BOM of the built packages is the optimal outcome – optionally creating Custom Components (with CPEs associated and appropriate licences) for unmatched packages. Unbuilt packages will not be included in the BOM.
 
 Standard AOSP packages have no vulnerabilities reported (as none exist). If custom components are created for unmatched AOSP standard packages, they will have Apache-2.0 license.
+
+A Google/Android custom component can optionally be created to show CVEs reported in the Android Security Bulletins (requires BD-SCA 2026.7 or later).
 
 The primary assumption is that determining up-stream origins for licence and vulnerability identification will add value for external packages. Analysis shows that many packages potentially have unpatched vulnerabilities from the origin OSS package. Furthermore, the 
 
