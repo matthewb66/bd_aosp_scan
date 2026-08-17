@@ -1,8 +1,41 @@
-# scan_aosp_project.py v0.17
+# Black Duck SCA AOSP scan utility - bd_aosp_scan v0.17
 
 Creates a Black Duck SCA project version from AOSP (Android Open Source Project) build artifacts. Platform repos and external third-party packages are uploaded separately, each with their own matching strategy; Custom (Black Duck) components can be created where upstream OSS packages cannot be identified, with CPE specified to map CVEs where available.
 
 Black Duck SCA 2026.7 provides new capabilities to provide a CPE for custom components for 3rd party vulnerability reporting. Ensure you are using this version for complete vulnerability identification and reporting.
+
+## AOSP Introduction
+
+AOSP builds download source code from https://android.googlesource.com.
+
+AOSP comprises:
+*	About 400 standard AOSP packages
+*	About 500 external packages forked into android.googlesource.com repos with METADATA files
+    - Repos are forked from github (60%) or elsewhere
+    - Many forks reference only a commit ID (no tag/version)
+    - Several packages only have a CPE
+    - Several packages have no usable information about upstream origin
+    -	METADATA is inconsistent (not all files are the same format) and inaccurate in many cases
+
+Not all repos are built/included in an Android release.
+
+Android Security Bulletins are provided by Google referencing CVEs but all are created with the same CPE with vendor 'google' and package 'android'. CPE version strings do not match the versioning used in the AOSP repos ('16.0' versus 'android_16.0.0_r4' for example).
+
+## BD Scan Utility - Principles
+
+A complete BOM of the built packages is the optimal outcome – optionally creating Custom Components (with CPEs associated and appropriate licences) for unmatched packages. Unbuilt packages will not be included in the BOM.
+
+Standard AOSP packages have no vulnerabilities reported (as none exist). If custom components are created for unmatched AOSP standard packages, they will have Apache-2.0 license.
+
+The primary assumption is that determining up-stream origins for licence and vulnerability identification will add value for external packages. Analysis shows that many packages potentially have unpatched vulnerabilities from the origin OSS package. Furthermore, the 
+
+External packages can optionally be scanned:
+-	Using the upstream origin as component ID where identifiable
+-	By looking up CPEs in the BD KB to find associated components
+-	By creating custom components for unmatched components with CPE where available (and licences from the source repo configuration)
+-	By Signature scanning where no other identification is successful.
+
+Custom Components are global, so once created they can change the scan result for subsequent scans. Care should be used when creating custom components (the scan script does not create them by default)
 
 ## Why External Repo Scan Modes Exist
 
@@ -89,11 +122,15 @@ If not specified, then the Github lookup will use the free API tier which only a
 
 The `--external-scan-modes` argument controls which resolution strategies are applied to external packages. Specify a comma-separated list of modes or a preset name.
 
+Although any combination of modes can be used to scan external repos, the GITHUB_REPOS mode is fundamental to matching upstream OSS packages (and is recommended).
+Many external repos are forked from Github but only reference a commit ID. The GH API can be used to lookup the closest version/tag for full identification; GH rate-limiting
+means that a (readonly) GitHub API token (--github-token) is required to support full analysis.
+
 **Individual modes:**
 
 | Mode | Description |
 |---|---|
-| `GITHUB_REPOS` | Resolve commit-hash packages to tagged releases via the GitHub API |
+| `GITHUB_REPOS` | Resolve commit-hash packages to tagged releases via the GitHub API (recommended --github-token is also specified) |
 | `KB_LOOKUP` | Look up commit-hash packages in the Black Duck KnowledgeBase by component and release date |
 | `CPE_LOOKUP` | Resolve packages with CPE identifiers against the Black Duck KnowledgeBase |
 | `SIG_SCAN` | Run Black Duck Detect signature scanning on unmatched external repos |
@@ -105,14 +142,13 @@ The `--external-scan-modes` argument controls which resolution strategies are ap
 |---|---|
 | `DEFAULT` | `GITHUB_REPOS`, `KB_LOOKUP`, `CPE_LOOKUP`, `CUSTOM_COMPS` |
 | `ALL` | All modes |
-| `NONE` | No external repo processing (platform repos are still uploaded) |
+| `NONE` | No external repo processing (platform repos are processed) |
 
 Modes can be combined: `--external-scan-modes 'GITHUB_REPOS,CPE_LOOKUP,CUSTOM_COMPS'`
 
 ### Examples
 
 **Run prerequisites:**
-**Full resolution with GitHub, KB, and CPE lookup and custom component creation:**
 
 ```bash
 
@@ -123,7 +159,7 @@ export BLACKDUCK_URL="https://your-blackduck-server.com"
 #export BLACKDUCK_TRUST_CERT=true
 ```
 
-**Full resolution with GitHub, KB, and CPE lookup and custom component creation:**
+**Full BOM resolution with GitHub, KB, CPE Lookup & Signature scan for external packages and create custom components for unknown packages:**
 
 ```bash
 python3 scan_aosp_project.py \
@@ -135,10 +171,11 @@ python3 scan_aosp_project.py \
     --github-token "$GITHUB_TOKEN" \
     --aosp-root /home/aosp \
     --external-scan-modes ALL \
-    --create-custom-components
+    --create-custom-components \
+    --github-token ghb-XXX
 ```
 
-**Platform repos only and custom component creation:**
+**Platform repos only (external repos excluded) and create custom components for missing standard packages:**
 
 ```bash
 python3 scan_aosp_project.py \
@@ -156,7 +193,7 @@ python3 scan_aosp_project.py \
 
 2. **Map paths to repos** — matches each installed path to its owning repo using longest-prefix matching.
 
-3. **Collect platform packages** — all non-external repos are packaged with `pkg:android/platform-{repo-path}@{android_version}` PURLs and uploaded in a single-pass SBOM.
+3. **Collect platform packages** — all non-external repos are packaged with `pkg:android/platform-{repo-path}@{android_version}` PURLs and uploaded in a single-pass SBOM to Black Duck SCA (--create-custom-components determines if missing packages are added as custom components). A master Google/Android custom component can also be created to map CVEs reported against the associated CPE (requires BD-SCA 2026.7 or later).
 
 4. **Classify external packages** — external repos (under `external/`) are classified into tiers based on their `METADATA` content:
    - **Tier 1 — GitHub PURL**: repo has a GitHub URL and a tagged version (strongest match)
@@ -168,13 +205,12 @@ python3 scan_aosp_project.py \
    - `GITHUB_REPOS`: queries the GitHub API to find tagged releases near the repo's last upgrade date, promoting commit-hash packages to tagged versions
    - `KB_LOOKUP`: queries the Black Duck KnowledgeBase to find component versions by release date
    - `CPE_LOOKUP`: resolves CPE identifiers against the Black Duck KnowledgeBase
+     
 6. **Ensure project version** — creates the Black Duck project and version via the REST API if they do not already exist.
 
-7. **Upload platform SBOM** — uploads platform repo packages in a single pass.
+7. **Upload external SBOM** — uploads external packages with autocreate enabled when `CUSTOM_COMPS` mode is active and `--create-custom-components` is passed, creating custom components for any packages that do not match existing KnowledgeBase components.
 
-8. **Upload external SBOM** — uploads external packages with autocreate enabled when `CUSTOM_COMPS` mode is active and `--create-custom-components` is passed, creating custom components for any packages that do not match existing KnowledgeBase components.
-
-9. **Signature scan** — if `SIG_SCAN` mode is active, runs Black Duck Detect on unmatched external repos in batches of up to 4 GB, using `.bdignore` files to control which repos are included in each batch.
+8. **Signature scan** — if `SIG_SCAN` mode is active, runs Black Duck Detect on unmatched external repos in batches of up to 4 GB, using `.bdignore` files to control which repos are included in each batch.
 
 ## Generating Input Files
 
