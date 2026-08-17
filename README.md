@@ -12,10 +12,6 @@ AOSP comprises:
 *	About 400 standard AOSP packages
 *	About 500 external packages forked into android.googlesource.com repos with METADATA files
     - Repos are forked from github (60%) or elsewhere
-    - Many forks reference only a commit ID (no tag/version)
-    - Several packages only have a CPE
-    - Several packages have no usable information about upstream origin
-    - METADATA is inconsistent (not all files are the same format) and inaccurate in many cases
 
 Not all repos are built/included in an Android release.
 
