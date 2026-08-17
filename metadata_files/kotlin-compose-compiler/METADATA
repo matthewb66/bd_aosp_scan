@@ -1,0 +1,16 @@
+name: "AndroidX Compose Compiler plugin"
+description: "Contains the Kotlin compiler plugin for Compose"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 8
+    day: 6
+  }
+  homepage: "https://kotlinlang.org/"
+  identifier {
+    type: "Archive"
+    value: "/placer/prod/home/kokoro-dedicated/build_artifacts/prod/android-studio/kotlin-verification-pipeline/verify-artifacts/release/1168/20250806-060341/maven-2.2.0-release-294.zip"
+  }
+}
+

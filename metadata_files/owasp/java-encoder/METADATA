@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/owasp/java-encoder
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "owasp-java-encoder"
+description: "The OWASP Java Encoder is a Java 1.5+ simple-to-use drop-in high-performance encoder class with no dependencies and little baggage. This project will help Java web developers defend against Cross Site Scripting!"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 16
+  }
+  homepage: "https://owasp.org/www-project-java-encoder/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/OWASP/owasp-java-encoder.git"
+    version: "be0670b6880483412f8da17211a5d084ff43cd24"
+    closest_version: "v1.3.1"
+  }
+}

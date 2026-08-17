@@ -1,0 +1,16 @@
+name: "javaparser"
+description: "Java 1-21 Parser and Abstract Syntax Tree for Java with advanced analysis functionalities."
+third_party {
+  license_type: RESTRICTED
+  last_upgrade_date {
+    year: 2025
+    month: 7
+    day: 16
+  }
+  homepage: "http://javaparser.org/"
+  identifier {
+    type: "Archive"
+    value: "https://github.com/javaparser/javaparser/archive/refs/tags/javaparser-parent-3.27.0.tar.gz"
+    version: "javaparser-parent-3.27.0"
+  }
+}

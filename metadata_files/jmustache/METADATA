@@ -1,0 +1,15 @@
+name: "jmustache"
+description:
+    "A Java implementation of the Mustache template language"
+
+third_party {
+  version: "f067203baf230875308829145301e55d776e7819"
+  license_type: NOTICE
+  identifier {
+    type: "Archive"
+    value: "https://github.com/samskivert/jmustache"
+    primary_source: true
+    version: "f067203baf230875308829145301e55d776e7819"
+  }
+  last_upgrade_date { year: 2025 month: 11 day: 5 }
+}

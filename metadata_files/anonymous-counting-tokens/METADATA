@@ -1,0 +1,15 @@
+name: "anonymous-counting-tokens"
+description: ""
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2023
+    month: 11
+    day: 13
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/anonymous-counting-tokens"
+    version: "3dea51443eaabde75c00cd325bc31e3b848a767f"
+  }
+}

@@ -1,0 +1,22 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/pciutils
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "pciutils"
+description: "The PCI Utilities are a collection of programs for inspecting and manipulating configuration of PCI devices, all based on a common portable library libpci which offers access to the PCI configuration space on a variety of operating systems."
+third_party {
+  license_type: RESTRICTED
+  last_upgrade_date {
+    year: 2025
+    month: 11
+    day: 3
+  }
+  homepage: "https://mj.ucw.cz/sw/pciutils/"
+  identifier {
+    type: "Git"
+    value: "https://git.kernel.org/pub/scm/utils/pciutils/pciutils.git"
+    version: "c6030ae1576b6bf1de9b41f53a9ed76137181d99"
+    closest_version: "v3.14.0"
+    primary_source: true
+  }
+}

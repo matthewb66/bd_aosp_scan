@@ -1,0 +1,19 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/ruy
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "ruy"
+description: "ruy is a matrix multiplication library."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2024
+    month: 11
+    day: 8
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/ruy"
+    version: "c08ec529fc91722bde519628d9449258082eb847"
+  }
+}

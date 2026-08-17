@@ -1,0 +1,16 @@
+name: "linux-firmware-mt7921"
+description:
+    "Contains an import of upstream linux-firmware for mt7921."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "7cf218e65a8f7a8a54b0b52c0ec4a3da07a3443b"
+  }
+  version: "7cf218e65a8f7a8a54b0b52c0ec4a3da07a3443b"
+  last_upgrade_date { year: 2025 month: 1 day: 18 }
+  license_type: BY_EXCEPTION_ONLY
+}

@@ -1,0 +1,12 @@
+name: "libchrome-gestures"
+description: "ChromeOS touchpad gestures library. Upstream is the source of truth, please contribute CLs there first."
+
+third_party {
+  url {
+    type: GIT
+    value: "https://chromium.googlesource.com/chromiumos/platform/gestures/"
+  }
+  version: "827e62907b9b732444b67f26bf4759610effb90a"
+  last_upgrade_date { year: 2026 month: 2 day: 11  }
+  license_type: NOTICE
+}

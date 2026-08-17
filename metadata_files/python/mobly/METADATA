@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/python/mobly
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "mobly"
+description: "Mobly is a Python-based test framework that specializes in supporting test cases that require multiple devices, complex environments, or custom hardware setups."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 11
+    day: 4
+  }
+  homepage: "https://github.com/google/mobly"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/mobly"
+    version: "c8bdffe90bbe30ddbd88d64eda389019f5855b14"
+  }
+}

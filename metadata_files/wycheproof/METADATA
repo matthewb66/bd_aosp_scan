@@ -1,0 +1,15 @@
+name: "wycheproof"
+description: "Project Wycheproof tests crypto libraries against known attacks."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2017
+    month: 3
+    day: 17
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/wycheproof"
+    version: "c89a32e2ce9e165423a632388513f8c972cdbdbb"
+  }
+}

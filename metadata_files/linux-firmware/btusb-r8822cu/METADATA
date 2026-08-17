@@ -1,0 +1,16 @@
+name: "linux-firmware-btusb-r8822cu"
+description:
+    "Contains an import of upstream linux-firmware for btusb-r8822cu."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "1b7d065adf3513b9fdabdf27aa9aa843ed09dc75"
+  }
+  version: "1b7d065adf3513b9fdabdf27aa9aa843ed09dc75"
+  last_upgrade_date { year: 2025 month: 1 day: 9 }
+  license_type: BY_EXCEPTION_ONLY
+}

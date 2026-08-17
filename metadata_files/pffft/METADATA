@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/<absolute path to project>
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "pffft"
+description: "A pretty fast FFT. This is a fork of Julien Pommier\'s PFFFT. The original hasn\'t been maintained since 2016, while this one is actively developed on."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 27
+  }
+  homepage: "https://github.com/marton78/pffft"
+  identifier {
+    type: "Git"
+    value: "https://github.com/marton78/pffft.git"
+    version: "e0bf595c98ded55cc457a371c1b29c8cab552628"
+  }
+}

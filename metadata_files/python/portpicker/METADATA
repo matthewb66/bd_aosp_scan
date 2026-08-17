@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/python/portpicker
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "python_portpicker"
+description: "This module is useful for finding unused network ports on a host."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 16
+  }
+  homepage: "https://github.com/google/python_portpicker"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/python_portpicker"
+    version: "0b1a8ec5494281a809d294ef99179f26fa56be7f"
+    closest_version: "v1.6.0"
+  }
+}

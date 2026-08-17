@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/pthreadpool
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "pthreadpool"
+description: "pthreadpool is a portable and efficient thread pool implementation. It provides similar functionality to #pragma omp parallel for, but with additional features."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 16
+  }
+  homepage: "https://github.com/Maratyszcza/pthreadpool"
+  identifier {
+    type: "Git"
+    value: "https://github.com/Maratyszcza/pthreadpool"
+    version: "560c60d342a76076f0557a3946924c6478470044"
+  }
+}

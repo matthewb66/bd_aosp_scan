@@ -1,0 +1,14 @@
+name: "Wuffs Mirror Release C"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2021
+    month: 12
+    day: 13
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/wuffs-mirror-release-c"
+    version: "bf9dab31e512c194872ab02b3d44b72457bd578b"
+  }
+}

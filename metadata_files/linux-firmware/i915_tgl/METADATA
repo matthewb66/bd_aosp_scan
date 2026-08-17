@@ -1,0 +1,16 @@
+name: "linux-firmware-i915_tgl"
+description:
+    "Contains an import of upstream linux-firmware for i915_tgl."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "7d2b4c758cfd02c2ba1c807f234c0afc308789e5"
+  }
+  version: "7d2b4c758cfd02c2ba1c807f234c0afc308789e5"
+  last_upgrade_date { year: 2026 month: 3 day: 6 }
+  license_type: BY_EXCEPTION_ONLY
+}

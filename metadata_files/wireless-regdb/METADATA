@@ -1,0 +1,22 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/wireless-regdb
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "wireless-regdb"
+description: "wireless-regdb is a regulatory database used by Linux."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 10
+    day: 9
+  }
+  homepage: "https://wireless.docs.kernel.org/en/latest/en/developers/regulatory/wireless-regdb.html"
+  identifier {
+    type: "Git"
+    value: "https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git"
+    version: "a827d3af0b93878307921b2c7354934507c91dd5"
+    closest_version: "master-2025-10-07"
+    primary_source: true
+  }
+}

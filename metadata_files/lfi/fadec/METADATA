@@ -1,0 +1,15 @@
+name: "fadec"
+description: "Fadec is a fast and lightweight decoder for x86-32 and x86-64."
+
+third_party {
+  homepage: "https://aengelke.net/fadec.html"
+  identifier {
+    type: "Git"
+    value: "https://github.com/aengelke/fadec"
+    primary_source: true
+    version: "c0139efde553cabff74d161fde77280890d2679a"
+  }
+  version: "c0139efde553cabff74d161fde77280890d2679a"
+  last_upgrade_date { year: 2025 month: 11 day: 6 }
+  license_type: NOTICE
+}

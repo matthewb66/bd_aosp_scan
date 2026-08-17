@@ -1,0 +1,19 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/double-conversion
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "double-conversion"
+description: "Efficient binary-decimal and decimal-binary conversion routines for IEEE doubles."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 4
+    day: 28
+  }
+  identifier {
+    type: "Archive"
+    value: "https://github.com/google/double-conversion/archive/v3.3.1.tar.gz"
+    version: "v3.3.1"
+  }
+}

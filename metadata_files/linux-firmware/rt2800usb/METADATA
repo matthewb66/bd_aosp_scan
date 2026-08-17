@@ -1,0 +1,16 @@
+name: "linux-firmware-rt2800usb"
+description:
+    "Contains an import of upstream linux-firmware for rt2800usb."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "e1d95775eb3db64ab3740701bf9682e5856aab2e"
+  }
+  version: "e1d95775eb3db64ab3740701bf9682e5856aab2e"
+  last_upgrade_date { year: 2024 month: 10 day: 24 }
+  license_type: BY_EXCEPTION_ONLY
+}

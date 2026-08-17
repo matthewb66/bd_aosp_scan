@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/lottie
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "lottie"
+description: "Lottie is a mobile library for Android and iOS that parses Adobe After Effects animations exported as json with bodymovin and renders the vector animations natively on mobile and through React Native! See: https://github.com/airbnb/lottie-android"
+third_party {
+  license_type: RESTRICTED
+  license_note: "would be NOTICE save for CC-BY-SA in CODE_OF_CONDUCT.md"
+  last_upgrade_date {
+    year: 2024
+    month: 10
+    day: 1
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/airbnb/lottie-android"
+    version: "18ed2107792631385c4d8ea3f9a0c2668c29339e"
+    closest_version: "v6.5.2"
+  }
+}

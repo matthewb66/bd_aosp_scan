@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/pogreb
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "pogreb"
+description: "Pogreb is an embedded key-value store for read-heavy workloads written in Go."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 10
+    day: 27
+  }
+  homepage: "https://github.com/akrylysov/pogreb"
+  identifier {
+    type: "Git"
+    value: "https://github.com/akrylysov/pogreb"
+    version: "3f96287d00695d12a9cbd6af3974f83ae91c9150"
+    primary_source: true
+  }
+}

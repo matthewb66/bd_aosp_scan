@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/leakcanary2
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "leakcanary2"
+description: "Memory leak detection library for Android."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 4
+    day: 25
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/square/leakcanary"
+    version: "8d29638ccf25e15d84b0119b6617f0069bc0b2d8"
+    closest_version: "v2.14"
+    primary_source: true
+  }
+}

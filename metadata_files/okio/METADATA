@@ -1,0 +1,24 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/okio
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "okio"
+description: "Okio is a library that complements java.io and java.nio to make it much easier to access, store, and process your data. It started as a component of OkHttp, the capable HTTP client included in Android. It\'s well-exercised and ready to solve new problems."
+third_party {
+  license_type: NOTICE
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:squareup:okio:3.10.2"
+  }
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 9
+  }
+  homepage: "https://square.github.io/okio/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/square/okio/"
+    version: "e0dcfb6462e642a672ed82840b2530aa385636a9"
+    closest_version: "3.10.2"
+  }
+}

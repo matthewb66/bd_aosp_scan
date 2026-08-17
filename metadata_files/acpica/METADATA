@@ -1,0 +1,19 @@
+name: "ACPICA"
+description: "The ACPI Component Architecture (ACPICA) project provides an open-source operating system-independent implementation of the Advanced Configuration and Power Interface specification (ACPI)."
+third_party {
+  version: "20250807"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 9
+    day: 3
+  }
+  homepage: "https://github.com/acpica/acpica"
+  identifier {
+    type: "Git"
+    value: "https://github.com/acpica/acpica.git"
+    version: "aa98db3bd149fc1f8d2a3017cb05b6b1982c3296"
+    closest_version: "20250807"
+    primary_source: true
+  }
+}

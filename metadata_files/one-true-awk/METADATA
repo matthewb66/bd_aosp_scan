@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/one-true-awk
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "one-true-awk"
+description: "This is the version of awk described in \'The AWK Programming Language\', by Al Aho, Brian Kernighan, and Peter Weinberger (Addison-Wesley, 1988, ISBN 0-201-07981-X)."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 1
+    day: 5
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/onetrueawk/awk.git"
+    version: "61a7c75e225e3035390be32d635545e40d8c5faf"
+    closest_version: "20251225"
+  }
+}

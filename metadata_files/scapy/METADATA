@@ -1,0 +1,28 @@
+# *** TAKE SPECIAL CARE WHEN VENDORING IN THIS PROJECT.
+#
+#     DOCUMENTATION FILES LIKE doc/scapy/index.rst MAY HAVE CC-BY-NC-SA
+#     LICENSE. GOOGLE DOES NOT WANT TO HOST CC-BY-NC* CONTENT. ***
+
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/scapy
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "scapy"
+description: "Scapy is a powerful Python-based interactive packet manipulation program and library."
+third_party {
+  license_type: RESTRICTED
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:scapy:scapy:2.6.1"
+  }
+  last_upgrade_date {
+    year: 2025
+    month: 2
+    day: 11
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/secdev/scapy"
+    version: "8e08cbf759de6709a5b4af6bea3655d293129bb4"
+    closest_version: "v2.6.1"
+  }
+}

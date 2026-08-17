@@ -1,0 +1,21 @@
+name: "tink-java"
+description: "Tink library for Java"
+third_party {
+  version: "v1.16.0"
+  license_type: NOTICE
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:google:tink_java:1.16.0"
+  }
+  last_upgrade_date {
+    year: 2025
+    month: 2
+    day: 18
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/tink-crypto/tink-java"
+    version: "a8214b88ebefb7b4be4dc0820df2a0527e9119f8"
+    closest_version: "v1.16.0"
+    primary_source: true
+  }
+}

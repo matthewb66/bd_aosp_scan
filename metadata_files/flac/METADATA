@@ -1,0 +1,28 @@
+# THIS PACKAGE HAS SPECIAL LICENSING CONDITIONS. PLEASE
+# CONSULT THE OWNERS AND opensource-licensing@google.com BEFORE
+# DEPENDING ON IT IN YOUR PROJECT.
+
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/flac
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "flac"
+description: "Android fork of the flac library."
+third_party {
+  license_type: BY_EXCEPTION_ONLY
+  license_note: "Would be RESTRICTED save for GFDL in: README, COPYING.FDL, and doc/html/flac.css"
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:flac_project:flac:1.5.0"
+  }
+  last_upgrade_date {
+    year: 2025
+    month: 8
+    day: 6
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/xiph/flac.git"
+    version: "1507800de4b70e21be71f38caa0d9079d0bc6e45"
+    closest_version: "1.5.0"
+  }
+}

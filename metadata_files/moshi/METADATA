@@ -1,0 +1,19 @@
+name: "moshi"
+description: "Moshi is a modern JSON library for Android, Java and Kotlin."
+third_party {
+  version: "1.15.1"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2024
+    month: 8
+    day: 21
+  }
+  homepage: "https://github.com/square/moshi"
+  identifier {
+    type: "Git"
+    value: "https://github.com/square/moshi.git"
+    version: "ee55c1079a403bccfb59bb34a7828d8c90c3568a"
+    closest_version: "1.15.1"
+    primary_source: true
+  }
+}

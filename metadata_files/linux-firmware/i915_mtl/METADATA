@@ -1,0 +1,16 @@
+name: "linux-firmware-i915_mtl"
+description:
+    "Contains an import of upstream linux-firmware for i915_mtl."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "e61b8981aeef136b9a026f7ef133dec2cc5ecfb6"
+  }
+  version: "e61b8981aeef136b9a026f7ef133dec2cc5ecfb6"
+  last_upgrade_date { year: 2025 month: 3 day: 26 }
+  license_type: BY_EXCEPTION_ONLY
+}

@@ -1,0 +1,26 @@
+# THIS PACKAGE HAS SPECIAL LICENSING CONDITIONS. PLEASE
+# CONSULT THE OWNERS AND opensource-licensing@google.com BEFORE
+# DEPENDING ON IT IN YOUR PROJECT.
+
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/iamf_tools
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "iamf_tools"
+description: "The Immersive Audio Model and Formats (IAMF) tools repository. This directory contains software tools for the AOM Immersive Audio Model and Formats (IAMF)."
+third_party {
+  license_type: BY_EXCEPTION_ONLY
+  license_note: "Alliance for Open Media Patent License and BSD 3-Clause Clear License as described in iamf_tools/LICENSE and iamf_tools/PATENTS and in the headers for all code files in iamf_tools/iamf/, such as iamf_tools/iamf/common/read_bit_buffer.h."
+  last_upgrade_date {
+    year: 2025
+    month: 11
+    day: 4
+  }
+  homepage: "https://aomediacodec.github.io/iamf/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/AOMediaCodec/iamf-tools"
+    version: "9cb0c273e7af928633ac40f169ef1d887fa98b2d"
+    primary_source: true
+  }
+}

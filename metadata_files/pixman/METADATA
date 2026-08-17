@@ -1,0 +1,23 @@
+
+name: "pixman"
+description: "Pixman is a library that provides low-level pixel manipulation features such as image compositing and trapezoid rasterization."
+third_party {
+  version: "pixman-0.44.2"
+  license_type: NOTICE
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:pixman:pixman:0.44.2"
+  }
+  last_upgrade_date {
+    year: 2025
+    month: 4
+    day: 30
+  }
+  homepage: "https://gitlab.freedesktop.org/pixman/pixman"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.freedesktop.org/pixman/pixman"
+    version: "46655e15671e1ca62d699821d75a85d341d7229c"
+    closest_version: "pixman-0.44.2"
+    primary_source: true
+  }
+}

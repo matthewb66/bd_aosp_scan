@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/vboot_reference
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "vboot_reference"
+description: "Google\'s Verified Boot reference implementation (versions 1.x & 2.x) and helper tools"
+third_party {
+  license_type: RESTRICTED
+  license_note: "would be NOTICE save for scripts/image_signing/lib/shflags/shflags"
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 3
+  }
+  identifier {
+    type: "Git"
+    value: "https://chromium.googlesource.com/chromiumos/platform/vboot_reference"
+    version: "42f5313871c66a1ea33c0f6bacd0a458d645a918"
+    primary_source: true
+  }
+}

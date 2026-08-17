@@ -1,0 +1,20 @@
+name: "libexif"
+description: "A library for parsing, editing, and saving EXIF data from image files. Much of EXIF reading capability removed to reduce library scope"
+third_party {
+  homepage: "https://libexif.github.io/"
+  identifier {
+    type: "Archive"
+    value: "http://sourceforge.net/projects/libexif/files/libexif/0.6.21/libexif-0.6.21.tar.gz"
+    version: "0.6.21"
+  }
+  security {
+    tag: "cpe:2.3:a:libexif_project:libexif:0.6.21:*:*:*:*:*:*:*"
+  }
+  version: "0.6.21"
+  license_type: RESTRICTED
+  last_upgrade_date {
+    year: 2015
+    month: 06
+    day: 02
+  }
+}

@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/rust/crabbyavif
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "crabbyavif"
+description: "CrabbyAvif is a rust library that is used for AVIF Image Decoding"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 27
+  }
+  homepage: "https://github.com/webmproject/CrabbyAvif"
+  identifier {
+    type: "Git"
+    value: "https://github.com/webmproject/CrabbyAvif.git"
+    version: "8b3ce59e33d6c80c22a02d4adaed25e3f5b9357a"
+    primary_source: true
+  }
+}

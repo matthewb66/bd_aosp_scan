@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/chromiumos-config
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "chromiumos-config"
+description: "ChromeOS GRPC proto files for ChromeOS Infra and test services."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 11
+  }
+  identifier {
+    type: "Git"
+    value: "https://chromium.googlesource.com/chromiumos/config/"
+    version: "077732c591419c23bdf8dddd89a76c07a5f5eb5d"
+    primary_source: true
+  }
+}

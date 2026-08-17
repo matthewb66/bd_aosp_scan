@@ -1,0 +1,16 @@
+name: "google-cloud-java"
+description: "Google Cloud Java Client Libraries"
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://github.com/googleapis/google-cloud-java"
+  }
+  url {
+    type: GIT
+    value: "https://github.com/googleapis/google-cloud-java.git"
+  }
+  version: "v1.11.0"
+  last_upgrade_date: { year: 2024 month: 4 day: 8 }
+  license_type: NOTICE
+}

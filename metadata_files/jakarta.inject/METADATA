@@ -1,0 +1,19 @@
+name: "jakarta.inject"
+description: "Java standard dependency injection library."
+third_party {
+  version: "2.0.1"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2024
+    month: 12
+    day: 18
+  }
+  homepage: "https://jakarta.ee/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/jakartaee/inject"
+    version: "80c9e1267db53d0d5fd7b2afb2fe6a6283a3f43a"
+    closest_version: "2.0.1"
+    primary_source: true
+  }
+}

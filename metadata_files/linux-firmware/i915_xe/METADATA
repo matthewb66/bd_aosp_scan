@@ -1,0 +1,16 @@
+name: "linux-firmware-i915_xe"
+description:
+    "Contains an import of upstream linux-firmware for i915_xe."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "486ac8f9adb4d77b951b55179985c6b3c20b6957"
+  }
+  version: "486ac8f9adb4d77b951b55179985c6b3c20b6957"
+  last_upgrade_date { year: 2026 month: 1 day: 12 }
+  license_type: BY_EXCEPTION_ONLY
+}

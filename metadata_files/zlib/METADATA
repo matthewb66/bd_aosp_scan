@@ -1,0 +1,24 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/zlib
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "zlib"
+description: "The Chromium fork of the zlib compression library."
+third_party {
+  license_type: NOTICE
+  security {
+    note: "CVE-2023-45853 handled in b/40068861"
+    tag: "NVD-CPE2.3:cpe:/a:zlib:zlib:1.3.1"
+    mitigated_security_patch: "CVE-2023-45853"
+  }
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 9
+  }
+  identifier {
+    type: "Git"
+    value: "https://chromium.googlesource.com/chromium/src/third_party/zlib/"
+    version: "b80f1d1e5256ac25f6aea3f31f13d458981cb1f9"
+  }
+}

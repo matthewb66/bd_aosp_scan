@@ -1,0 +1,19 @@
+name: "failsafe"
+description:
+    "Failsafe is a lightweight, zero-dependency library for handling failures "
+    "in Java 8+, with a concise API for handling everyday use cases and the "
+    "flexibility to handle everything else. It works by wrapping executable "
+    "logic with one or more resilience policies, which can be combined and "
+    "composed as needed."
+
+third_party {
+  identifier {
+    type: "Git"
+    value: "https://github.com/failsafe-lib/failsafe"
+    primary_source: true
+    version: "8ae344fda21eb00c32a34bbd9517babe5b6fadc5"
+  }
+  version: "8ae344fda21eb00c32a34bbd9517babe5b6fadc5"
+  last_upgrade_date { year: 2026 month: 2 day: 13 }
+  license_type: NOTICE
+}

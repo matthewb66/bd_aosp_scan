@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/python/bumble
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "Bumble"
+description: "Bumble is a full-featured Bluetooth stack written entirely in Python."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 3
+    day: 2
+  }
+  homepage: "https://google.github.io/bumble/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/bumble"
+    version: "eb64debb622d5059dc5fba8d92d95b63947dcadb"
+  }
+}

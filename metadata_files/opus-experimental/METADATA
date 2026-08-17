@@ -1,0 +1,16 @@
+name: "opus-experimental"
+description: "Experimental fork of libopus"
+third_party {
+  license_type: BY_EXCEPTION_ONLY
+  last_upgrade_date {
+    year: 2025
+    month: 12
+    day: 11
+  }
+  identifier {
+    type: "Git"
+    value: "https://gitlab.xiph.org/xiph/opus.git"
+    version: "592aa87771b8878feb08417ae1e8902dc8c25388"
+    primary_source: true
+  }
+}

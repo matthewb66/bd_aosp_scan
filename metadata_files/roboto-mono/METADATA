@@ -1,0 +1,18 @@
+name: "Roboto Mono"
+description: "Roboto Mono is a monospaced addition to the Roboto type family."
+third_party {
+  version: "v3.001"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 5
+    day: 9
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/googlefonts/RobotoMono"
+    version: "111eb14e367888c9374da4da0b018e72cf8ac46d"
+    closest_version: "v3.001"
+    primary_source: true
+  }
+}

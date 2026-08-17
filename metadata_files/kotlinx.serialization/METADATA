@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/kotlinx.serialization
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "kotlinx.serialization"
+description: "Kotlin serialization consists of a compiler plugin, that generates visitor code for serializable classes, runtime library with core serialization API and support libraries with various serialization formats."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 7
+    day: 24
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/Kotlin/kotlinx.serialization"
+    version: "afd811f5221d803588ea4a2713ab6b0bd78d288a"
+    closest_version: "v1.8.1"
+    primary_source: true
+  }
+}

@@ -1,0 +1,16 @@
+name: "accompanist"
+description:
+    "Accompanist is a group of libraries that aim to supplement Jetpack Compose with features that are commonly required by developers but not yet available. Accompanist is a labs like environment for new Compose APIs. We use it to help fill known gaps in the Compose toolkit, experiment with new APIs and to gather insight into the development experience of developing a Compose library. The goal of these libraries is to upstream them into the official toolkit, at which point they will be deprecated and removed from Accompanist."
+
+third_party {
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/accompanist"
+    version: "10a2c565f6dac44709b9f2b77dd06d8b9d1fafcb"
+    primary_source: true
+  }
+  version: "10a2c565f6dac44709b9f2b77dd06d8b9d1fafcb"
+  last_upgrade_date { year: 2024 month: 3 day: 4 }
+  license_type: NOTICE
+}
+

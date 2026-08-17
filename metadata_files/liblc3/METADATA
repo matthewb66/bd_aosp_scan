@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/liblc3
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "liblc3"
+description: "Low Complexity Communication Codec (LC3)"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 11
+    day: 21
+  }
+  homepage: "https://github.com/google/liblc3"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/liblc3"
+    version: "96a3af0beb5487aca3b98a4b992a539a1f6d80d1"
+    closest_version: "v1.1.3"
+  }
+}

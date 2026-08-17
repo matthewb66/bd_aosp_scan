@@ -1,0 +1,13 @@
+name: "big-shoulders-text"
+description:
+    "Big Shoulders is a superfamily of condensed American Gothic variable fonts"
+
+third_party {
+  url {
+    type: GIT
+    value: "https://github.com/xotypeco/big_shoulders"
+  }
+  version: "654926c9360eebbe55b7d257085ef83eb34469cb"
+  last_upgrade_date { year: 2020 month: 3 day: 4 }
+  license_type: NOTICE
+}

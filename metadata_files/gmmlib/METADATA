@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/gmmlib
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "gmmlib"
+description: "The Intel(R) Graphics Memory Management Library provides device specific and buffer management for the Intel(R) Graphics Compute Runtime for OpenCL(TM) and the Intel(R) Media Driver for VAAPI."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 12
+    day: 5
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/intel/gmmlib"
+    version: "d6571241f1d9663c1a4104962cf4e0816f0e6387"
+    closest_version: "intel-gmmlib-22.8.2"
+    primary_source: true
+  }
+}

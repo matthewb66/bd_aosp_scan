@@ -1,0 +1,12 @@
+name: "jxmpp"
+description: "A minimal, modular Java library for XMPP parsing, JID handling, and stanza construction."
+
+third_party {
+  url {
+    type: GIT
+    value: "https://github.com/igniterealtime/jxmpp"
+  }
+  version: "1.1.0"
+  last_upgrade_date { year: 2025 month: 5 day: 5 }
+  license_type: NOTICE
+}

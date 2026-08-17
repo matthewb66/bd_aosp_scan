@@ -1,0 +1,16 @@
+name: "linux-firmware-iwlwifi-gl-c0-fm-c0-c101"
+description:
+    "Contains an import of upstream linux-firmware for iwlwifi-gl-c0-fm-c0-c101."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "881c549a82203abd9a88870ba27f3e8ce754b2c4"
+  }
+  version: "881c549a82203abd9a88870ba27f3e8ce754b2c4"
+  last_upgrade_date { year: 2025 month: 12 day: 19 }
+  license_type: BY_EXCEPTION_ONLY
+}

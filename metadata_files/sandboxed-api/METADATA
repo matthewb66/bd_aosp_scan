@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/sandboxed-api
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "sandboxed-api"
+description: "Generate sandboxes for C/C++ libraries automatically"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 5
+    day: 27
+  }
+  homepage: "https://github.com/google/sandboxed-api"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/sandboxed-api"
+    version: "08f4d5d09d1a232888ee683be4da13177b02c0d9"
+  }
+}

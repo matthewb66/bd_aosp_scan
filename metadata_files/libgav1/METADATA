@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/libgav1
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "libgav1"
+description: "Google\'s decoder implementation of the AV1 video codec."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 23
+  }
+  homepage: "http://go/libgav1-doc"
+  identifier {
+    type: "Git"
+    value: "https://chromium.googlesource.com/codecs/libgav1"
+    version: "c05bf9be660cf170d7c26bd06bb42b3322180e58"
+    closest_version: "v0.20.0"
+  }
+}

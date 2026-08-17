@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/google-highway
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "google-highway"
+description: "Performance-portable, length-agnostic SIMD with runtime dispatch"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 1
+    day: 29
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/highway"
+    version: "d631f729c0b6d0168eee6ca5e8f75e18165269ff"
+    primary_source: true
+  }
+}

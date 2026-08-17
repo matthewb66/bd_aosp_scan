@@ -1,0 +1,16 @@
+name: "linux-firmware-iwlwifi-sc-a0-wh-b0-c102"
+description:
+    "Contains an import of upstream linux-firmware for iwlwifi-sc-a0-wh-b0-c102."
+
+third_party {
+  homepage: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+  identifier {
+    type: "Git"
+    value: "https://gitlab.com/kernel-firmware/linux-firmware.git"
+    primary_source: true
+    version: "ed7a76faccbc8a6c768464b74a828afc6d4374d5"
+  }
+  version: "ed7a76faccbc8a6c768464b74a828afc6d4374d5"
+  last_upgrade_date { year: 2026 month: 1 day: 20 }
+  license_type: BY_EXCEPTION_ONLY
+}

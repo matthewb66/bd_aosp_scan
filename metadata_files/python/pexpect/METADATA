@@ -1,0 +1,19 @@
+name: "pexpect"
+description:
+    "Pexpect is a pure Python module for spawning child applications; "
+    "controlling them; and responding to expected patterns in their output. "
+    "Pexpect works like Don Libes’ Expect. Pexpect allows your script to spawn "
+    "a child application and control it as if a human were typing commands."
+
+third_party {
+homepage: "https://github.com/pexpect/pexpect/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/pexpect/pexpect/"
+    primary_source: true
+    version: "fc8f062518b40bd0862aae870cdedf5d9c0c7fc3"
+  }
+  version: "fc8f062518b40bd0862aae870cdedf5d9c0c7fc3"
+  last_upgrade_date { year: 2025 month: 5 day: 14 }
+  license_type: NOTICE
+}

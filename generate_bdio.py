@@ -82,9 +82,33 @@ def map_paths_to_repos(paths, repos):
     return repo_matches, unmatched
 
 
+def _is_commit_hash(s):
+    if not s:
+        return False
+    return bool(re.fullmatch(r'[0-9a-f]{7,40}', s)) and bool(re.search(r'[a-f]', s))
+
+
+def _has_github(url):
+    return bool(url) and bool(re.search(r'github\.com/', url, re.IGNORECASE))
+
+
+def _extract_version_from_archive_url(url):
+    if not url:
+        return None
+    match = re.search(r'/archive/([^/]+?)\.(?:zip|tar\.gz|tgz)$', url, re.IGNORECASE)
+    if match:
+        return match.group(1)
+    match = re.search(r'/releases/download/([^/]+)/', url, re.IGNORECASE)
+    if match:
+        return match.group(1)
+    return None
+
+
 def parse_metadata(metadata_path):
-    result = {"name": None, "version": None, "cpe": None, "homepage": None,
-              "git_url": None}
+    result = {"name": None, "version": None, "cpe": None, "github_url": None,
+              "closest_version": None, "top_version": None,
+              "license_type": None, "all_versions": [],
+              "last_upgrade_date": None}
 
     try:
         with open(metadata_path) as f:
@@ -97,40 +121,144 @@ def parse_metadata(metadata_path):
     if name_match:
         result["name"] = name_match.group(1)
 
-    version_match = re.search(r'^\s*version:\s*"([^"]*)"', content, re.MULTILINE)
-    if version_match:
-        result["version"] = version_match.group(1)
+    license_match = re.search(r'license_type:\s*(\w+)', content)
+    if license_match:
+        result["license_type"] = license_match.group(1)
 
     cpe_match = re.search(
-        r'identifier\s*\{[^}]*type:\s*"cpe"[^}]*value:\s*"([^"]*)"',
-        content, re.DOTALL
+        r'identifier\s*:?\s*\{[^}]*type:\s*"?cpe"?[^}]*value:\s*"([^"]*)"',
+        content, re.DOTALL,
     )
     if not cpe_match:
         cpe_match = re.search(
-            r'identifier\s*\{[^}]*value:\s*"(cpe:[^"]*)"[^}]*type:\s*"cpe"',
-            content, re.DOTALL
+            r'identifier\s*:?\s*\{[^}]*value:\s*"(cpe:[^"]*)"[^}]*type:\s*"?cpe"?',
+            content, re.DOTALL,
         )
+    if not cpe_match:
+        cpe_match = re.search(r'tag:\s*"(?:NVD-CPE2\.3:)?(cpe:[^"]*)"', content)
     if cpe_match:
         result["cpe"] = cpe_match.group(1)
 
-    for block in re.findall(r'url\s*\{(.*?)\}', content, flags=re.DOTALL):
-        if re.search(r'type:\s*GIT', block, re.IGNORECASE):
-            match = re.search(r'value:\s*"([^"]+)"', block)
-            if match:
-                result["git_url"] = match.group(1)
+    url_blocks = []
+    for block_content in re.findall(r'url\s*:?\s*\{(.*?)\}', content, flags=re.DOTALL):
+        type_match = re.search(r'type:\s*"?(\w+)"?', block_content)
+        value_match = re.search(r'value:\s*"([^"]+)"', block_content)
+        if type_match and value_match:
+            url_blocks.append({
+                "type": type_match.group(1).upper(),
+                "value": value_match.group(1),
+            })
+
+    identifier_blocks = []
+    for block_content in re.findall(
+        r'identifier\s*:?\s*\{(.*?)\}', content, flags=re.DOTALL
+    ):
+        type_match = re.search(r'type:\s*"?(\w+)"?', block_content)
+        if not type_match:
+            continue
+        block = {"type": type_match.group(1).upper(), "value": None,
+                 "version": None, "closest_version": None}
+        value_match = re.search(r'value:\s*"([^"]+)"', block_content)
+        if value_match:
+            block["value"] = value_match.group(1)
+        ver_match = re.search(r'(?<!closest_)version:\s*"([^"]*)"', block_content)
+        if ver_match:
+            block["version"] = ver_match.group(1)
+        closest_match = re.search(r'closest_version:\s*"([^"]*)"', block_content)
+        if closest_match:
+            block["closest_version"] = closest_match.group(1)
+        identifier_blocks.append(block)
+
+    homepage = None
+    homepage_match = re.search(r'homepage:\s*"([^"]+)"', content)
+    if homepage_match:
+        homepage = homepage_match.group(1)
+
+    github_url = None
+    for source in [
+        (url_blocks, "GIT"),
+        (identifier_blocks, "GIT"),
+        (url_blocks, "HOMEPAGE"),
+    ]:
+        for b in source[0]:
+            if b["type"] == source[1] and _has_github(b.get("value")):
+                github_url = b["value"]
+                break
+        if github_url:
+            break
+
+    if not github_url and _has_github(homepage):
+        github_url = homepage
+
+    if not github_url:
+        for source in [
+            (identifier_blocks, "HOMEPAGE"),
+            (url_blocks, "ARCHIVE"),
+            (identifier_blocks, "ARCHIVE"),
+        ]:
+            for b in source[0]:
+                if b["type"] == source[1] and _has_github(b.get("value")):
+                    github_url = b["value"]
+                    break
+            if github_url:
                 break
 
-    if not result["git_url"]:
-        for block in re.findall(r'identifier\s*\{(.*?)\}', content, flags=re.DOTALL):
-            if re.search(r'type:\s*"[Gg]it"', block):
-                match = re.search(r'value:\s*"([^"]+)"', block)
-                if match:
-                    result["git_url"] = match.group(1)
-                    break
+    result["github_url"] = github_url
 
-    log.debug("METADATA %s: name=%s version=%s cpe=%s git_url=%s",
+    content_no_ident = re.sub(
+        r'identifier\s*:?\s*\{.*?\}', '', content, flags=re.DOTALL,
+    )
+    ver_match = re.search(
+        r'^\s*version:\s*"([^"]*)"', content_no_ident, re.MULTILINE,
+    )
+    top_version = ver_match.group(1) if ver_match else None
+
+    closest_versions = []
+    for b in identifier_blocks:
+        if b["closest_version"]:
+            closest_versions.append(b["closest_version"])
+    if closest_versions:
+        result["closest_version"] = closest_versions[0]
+
+    result["top_version"] = top_version
+
+    versions = list(closest_versions)
+    if top_version:
+        versions.append(top_version)
+    for b in identifier_blocks:
+        if b["version"]:
+            versions.append(b["version"])
+    for b in url_blocks + identifier_blocks:
+        if b["type"] == "ARCHIVE":
+            v = _extract_version_from_archive_url(b.get("value"))
+            if v:
+                versions.append(v)
+
+    result["all_versions"] = versions
+
+    best = None
+    for v in versions:
+        if v and not _is_commit_hash(v):
+            best = v
+            break
+    if not best:
+        for v in versions:
+            if v:
+                best = v
+                break
+    result["version"] = best
+
+    date_match = re.search(
+        r'last_upgrade_date\s*\{[^}]*year:\s*(\d+)[^}]*month:\s*(\d+)'
+        r'[^}]*day:\s*(\d+)', content, re.DOTALL)
+    if date_match:
+        result["last_upgrade_date"] = (
+            f"{date_match.group(1)}-{int(date_match.group(2)):02d}"
+            f"-{int(date_match.group(3)):02d}")
+
+    log.debug("METADATA %s: name=%s version=%s cpe=%s github_url=%s",
               metadata_path, result["name"], result["version"],
-              result["cpe"], result["git_url"])
+              result["cpe"], result["github_url"])
     return result
 
 
@@ -269,7 +397,8 @@ def dir_size(path):
 
 
 def run_detect(scan_dir, bd_project, bd_version, bd_api_token, bd_url,
-               bd_trust_cert, batch_num):
+               bd_trust_cert, batch_num, detect_tools=None,
+               codelocation_prefix=""):
     detect_script = os.path.join(tempfile.gettempdir(), "detect11.sh")
     if not os.path.exists(detect_script):
         subprocess.run(
@@ -280,6 +409,8 @@ def run_detect(scan_dir, bd_project, bd_version, bd_api_token, bd_url,
         )
         os.chmod(detect_script, 0o755)
 
+    suffix = f"-{codelocation_prefix}{batch_num}" if codelocation_prefix \
+        else f"-{batch_num}"
     cmd = [
         "bash", detect_script,
         f"--blackduck.api.token={bd_api_token}",
@@ -287,10 +418,12 @@ def run_detect(scan_dir, bd_project, bd_version, bd_api_token, bd_url,
         f"--detect.project.name={bd_project}",
         f"--detect.project.version.name={bd_version}",
         f"--detect.source.path={scan_dir}",
-        f"--detect.project.codelocation.suffix=-{batch_num}",
+        f"--detect.project.codelocation.suffix={suffix}",
         "--detect.excluded.directories='*test*'",
-        "--detect.excluded.directories.search.depth=8"
+        "--detect.excluded.directories.search.depth=8",
     ]
+    if detect_tools:
+        cmd.append(f"--blackduck.tools={detect_tools}")
     if bd_trust_cert:
         cmd.append("--blackduck.trust.cert=true")
 
@@ -307,7 +440,8 @@ def run_detect(scan_dir, bd_project, bd_version, bd_api_token, bd_url,
 
 
 def run_sigscan_external(skipped_external, aosp_root, bd_project, bd_version,
-                         bd_api_token, bd_url, bd_trust_cert):
+                         bd_api_token, bd_url, bd_trust_cert,
+                         detect_tools=None, codelocation_prefix=""):
     external_dir = os.path.join(aosp_root, "external")
     bdignore_path = os.path.join(external_dir, ".bdignore")
 
@@ -340,7 +474,9 @@ def run_sigscan_external(skipped_external, aosp_root, bd_project, bd_version,
                   len(exclude), len(all_folders))
         try:
             run_detect(external_dir, bd_project, bd_version, bd_api_token,
-                       bd_url, bd_trust_cert, batch_num)
+                       bd_url, bd_trust_cert, batch_num,
+                       detect_tools=detect_tools,
+                       codelocation_prefix=codelocation_prefix)
         finally:
             if os.path.exists(bdignore_path):
                 os.remove(bdignore_path)
@@ -514,6 +650,14 @@ def main():
         help="Run signature scan on external repos",
     )
     parser.add_argument(
+        "--exclude-subfolders",
+        default="",
+        help="Comma-separated list of top-level subfolders to exclude "
+             "(e.g. external,prebuilts). Repos within these folders are "
+             "omitted from the BDIO. If 'external' is excluded, "
+             "--sigscan-external is ignored.",
+    )
+    parser.add_argument(
         "--debug", action="store_true",
         help="Enable debug logging",
     )
@@ -534,12 +678,29 @@ def main():
     if subfolder:
         log.debug("Subfolder filter: %s", subfolder)
 
+    exclude_subfolders = set()
+    if args.exclude_subfolders:
+        exclude_subfolders = {f.strip().rstrip('/')
+                              for f in args.exclude_subfolders.split(',')
+                              if f.strip()}
+    if exclude_subfolders:
+        log.debug("Excluding subfolders: %s", ", ".join(sorted(exclude_subfolders)))
+        if not args.list_packages:
+            print(f"Excluding subfolders: {', '.join(sorted(exclude_subfolders))}",
+                  file=sys.stderr)
+
     repos = parse_repo_list(args.repo_list)
     if subfolder:
         before = len(repos)
         repos = {k: v for k, v in repos.items()
                  if k == subfolder or k.startswith(subfolder + '/')}
         log.debug("Subfolder filtered repos: %d -> %d", before, len(repos))
+    if exclude_subfolders:
+        before = len(repos)
+        repos = {k: v for k, v in repos.items()
+                 if not any(k == ex or k.startswith(ex + '/')
+                            for ex in exclude_subfolders)}
+        log.debug("Exclude-subfolders filtered repos: %d -> %d", before, len(repos))
     if not args.list_packages:
         print(f"Loaded {len(repos)} repos from {args.repo_list}", file=sys.stderr)
 
@@ -549,6 +710,13 @@ def main():
         installed_paths = [p for p in installed_paths
                            if p == subfolder or p.startswith(subfolder + '/')]
         log.debug("Subfolder filtered paths: %d -> %d", before, len(installed_paths))
+    if exclude_subfolders:
+        before = len(installed_paths)
+        installed_paths = [p for p in installed_paths
+                           if not any(p == ex or p.startswith(ex + '/')
+                                      for ex in exclude_subfolders)]
+        log.debug("Exclude-subfolders filtered paths: %d -> %d",
+                  before, len(installed_paths))
     if not args.list_packages:
         print(f"Found {len(installed_paths)} installed paths", file=sys.stderr)
 
@@ -571,26 +739,25 @@ def main():
         if repo_path.startswith("external/"):
             log.debug("Processing external repo: %s", repo_path)
             metadata = {"name": None, "version": None, "cpe": None,
-                        "homepage": None, "git_url": None}
+                        "github_url": None}
             if args.aosp_root:
                 metadata_path = os.path.join(args.aosp_root, repo_path, "METADATA")
                 metadata = parse_metadata(metadata_path)
             else:
                 log.debug("No --aosp-root, skipping METADATA for %s", repo_path)
 
-            git_url = metadata.get("git_url")
-            if not git_url or not re.search(r'github\.com', git_url, re.IGNORECASE):
-                log.debug("Skipping %s: %s", repo_path, git_url or "no GIT URL")
-                skipped_external.append(
-                    (repo_path, git_url or "no GIT URL")
-                )
+            github_url = metadata.get("github_url")
+            if not github_url:
+                log.debug("Skipping %s: no GitHub URL found", repo_path)
+                skipped_external.append((repo_path, "no GitHub URL"))
                 continue
 
-            github_path = parse_github_path(git_url)
+            github_path = parse_github_path(github_url)
             if not github_path:
                 log.debug("Skipping %s: could not parse github path from %s",
-                          repo_path, git_url)
-                skipped_external.append((repo_path, f"bad github URL: {git_url}"))
+                          repo_path, github_url)
+                skipped_external.append(
+                    (repo_path, f"bad GitHub URL: {github_url}"))
                 continue
 
             pkg_version = metadata["version"] or args.android_version
@@ -658,7 +825,10 @@ def main():
             print(f"ERROR: Upload failed: {e.reason}", file=sys.stderr)
             sys.exit(1)
 
-    if args.sigscan_external and skipped_external:
+    if args.sigscan_external and "external" in exclude_subfolders:
+        print("--sigscan-external ignored: 'external' is in --exclude-subfolders",
+              file=sys.stderr)
+    elif args.sigscan_external and skipped_external:
         missing = []
         if not args.bd_api_token:
             missing.append("--bd-api-token or $BLACKDUCK_API_TOKEN")

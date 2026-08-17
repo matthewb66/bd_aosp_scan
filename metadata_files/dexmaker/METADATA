@@ -1,0 +1,10 @@
+name: "dexmaker"
+description: "Dexmaker is a Java-language API for doing compile time or runtime code generation targeting the Dalvik VM. Unlike cglib or ASM, this library creates Dalvik .dex files instead of Java .class files."
+third_party {
+  license_type: NOTICE
+  identifier {
+    type: "Git"
+    value: "https://github.com/linkedin/dexmaker/"
+    version: "65749b3da4b058c0b322b2adbf3e8f70488f8d8b"
+  }
+}

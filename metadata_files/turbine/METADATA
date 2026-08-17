@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/turbine
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "turbine"
+description: "Turbine is a header compiler for Java."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 2
+    day: 24
+  }
+  homepage: "https://github.com/google/turbine"
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/turbine"
+    version: "41661c4d3a855161df1188a2926d7767a8436c3d"
+  }
+}

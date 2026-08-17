@@ -1,0 +1,25 @@
+# THIS PACKAGE HAS SPECIAL LICENSING CONDITIONS. PLEASE
+# CONSULT THE OWNERS AND opensource-licensing@google.com BEFORE
+# DEPENDING ON IT IN YOUR PROJECT.
+
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/libaom
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "libaom"
+description: "Android fork of the libaom library."
+third_party {
+  license_type: BY_EXCEPTION_ONLY
+  license_note: "would be NOTICE save for Alliance for Open Media patent license:\n   libaom/PATENTS,\n and in headers for 930 other files like:\n   config/arm/config/aom_config.asm\n   config/arm/config/aom_config.c\n   ... \n   tools/txfm_analyzer/txfm_graph.h\n   tools/wrap-commit-msg.py"
+  last_upgrade_date {
+    year: 2025
+    month: 9
+    day: 10
+  }
+  identifier {
+    type: "Git"
+    value: "https://aomedia.googlesource.com/aom/"
+    version: "d772e334cc724105040382a977ebb10dfd393293"
+    closest_version: "v3.13.1"
+  }
+}

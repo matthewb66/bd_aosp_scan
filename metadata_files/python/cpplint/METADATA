@@ -1,0 +1,18 @@
+name: "cpplint"
+description: "Static code checker for C++."
+third_party {
+  version: "2.0.2"
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 4
+    day: 8
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/cpplint/cpplint"
+    version: "350702a4d39395571bd118c9a3cff0a573488d61"
+    closest_version: "2.0.2"
+    primary_source: true
+  }
+}

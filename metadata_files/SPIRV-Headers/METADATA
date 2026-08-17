@@ -1,0 +1,22 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/SPIRV-Headers
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "SPIRV-Headers"
+description: "This repository contains machine-readable files for the SPIR-V Registry"
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2026
+    month: 2
+    day: 12
+  }
+  homepage: "https://github.com/KhronosGroup/SPIRV-Headers"
+  identifier {
+    type: "Git"
+    value: "https://github.com/KhronosGroup/SPIRV-Headers"
+    version: "04f10f650d514df88b76d25e83db360142c7b174"
+    closest_version: "vulkan-sdk-1.4.341.0"
+    primary_source: true
+  }
+}

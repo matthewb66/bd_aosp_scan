@@ -1,0 +1,20 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/automotive-design-compose-protos
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "automotive-design-compose-protos"
+description: "DesignCompose protobuf message repository "
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 5
+    day: 15
+  }
+  identifier {
+    type: "Git"
+    value: "https://github.com/google/automotive-design-compose-protos"
+    version: "c098dddfb2e5ca16dc4ad3c1c76d0e329c2437ef"
+    primary_source: true
+  }
+}

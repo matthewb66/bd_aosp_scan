@@ -1,0 +1,21 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/python/python-api-core
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "python-api-core"
+description: "This library is not meant to stand-alone. Instead it defines common helpers used by all Google API clients."
+third_party {
+  license_type: NOTICE
+  last_upgrade_date {
+    year: 2025
+    month: 1
+    day: 29
+  }
+  homepage: "https://pypi.org/project/google-api-core/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/googleapis/python-api-core"
+    version: "b51ca57409cd787d6f11d7f844b39a432784f8b3"
+    closest_version: "v2.24.1"
+  }
+}

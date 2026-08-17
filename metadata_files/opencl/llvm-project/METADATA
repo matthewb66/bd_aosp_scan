@@ -1,0 +1,24 @@
+# This project was upgraded with external_updater.
+# Usage: tools/external_updater/updater.sh update external/opencl/llvm-project
+# For more info, check https://cs.android.com/android/platform/superproject/main/+/main:tools/external_updater/README.md
+
+name: "llvm-project"
+description: "The LLVM Project is a collection of modular and reusable compiler and toolchain technologies."
+third_party {
+  license_type: NOTICE
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:llvm:llvm:21.1.0"
+  }
+  last_upgrade_date {
+    year: 2026
+    month: 2
+    day: 9
+  }
+  homepage: "https://llvm.org/"
+  identifier {
+    type: "Git"
+    value: "https://github.com/llvm/llvm-project"
+    version: "d43b29fc545d702b35b20802f92357bc4c4177fe"
+    primary_source: true
+  }
+}

@@ -1,0 +1,18 @@
+name: "intel-pmt-metadata"
+description:
+    "Intel Platform Monitoring Technology Telemetry (PMT) is a hardware "
+    "interface for exposing SoC internal telemetry data on recent Intel SoCs. "
+    "The XML data is needed for parsing Intel PMT data (SOC telemetry data)."
+
+third_party {
+homepage: "https://github.com/intel/Intel-PMT"
+  identifier {
+    type: "Git"
+    value: "https://github.com/intel/Intel-PMT"
+    primary_source: true
+    version: "24027a3e3a7ebe80f1105ad9b5240cf32e5edfee"
+  }
+  version: "24027a3e3a7ebe80f1105ad9b5240cf32e5edfee"
+  last_upgrade_date { year: 2025 month: 4 day: 1 }
+  license_type: NOTICE
+}
