@@ -76,7 +76,7 @@ Black Duck connection settings can be provided as command-line arguments or envi
 |---|---|---|
 | API token | `--bd-api-token` | `BLACKDUCK_API_TOKEN` |
 | Server URL | `--bd-url` | `BLACKDUCK_URL` |
-| Trust server certificate | `--bd-trust-cert` | `BLACKDUCK_TRUST_CERT` (`1`, `true`, or `yes`) |
+| Trust server certificate | `--bd-trust-cert` | `BLACKDUCK_TRUST_CERT` (`true` or `false`) |
 | GitHub API token | `--github-token` | `GITHUB_TOKEN` |
 
 The Github Token is required to examine GH repos to match commit IDs used in AOSP against versions/tags mapped in Black Duck SCA.
