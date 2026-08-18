@@ -25,7 +25,7 @@ Standard AOSP packages have no vulnerabilities reported (as none exist). If cust
 
 A Google/Android custom component can optionally be created to show CVEs reported in the Android Security Bulletins (requires BD-SCA 2026.7 or later).
 
-The primary assumption is that determining up-stream origins for licence and vulnerability identification will add value for external packages. Analysis shows that many packages potentially have unpatched vulnerabilities from the origin OSS package. Furthermore, the 
+The primary assumption is that determining up-stream origins for licence and vulnerability identification will add value for external packages. Analysis shows that many packages potentially have unpatched vulnerabilities from the origin OSS package. Furthermore, the origin licence may not agree with the licences reported in the AOSP forks, and deep license analysis may identify embedded and other licences of interest.
 
 External packages can optionally be scanned:
 -	Using the upstream origin as component ID where identifiable
@@ -41,10 +41,10 @@ AOSP incorporates hundreds of third-party open-source projects under `external/`
 
 In practice, many of these `METADATA` files are missing, incomplete, or inaccurate:
 
-- Some repos have no `METADATA` file at all.
-- Some reference a GitHub URL but provide only a commit hash, not a release tag.
-- Some list a CPE (Common Platform Enumeration) identifier but no source URL.
-- Some contain stale or incorrect version information that no longer matches the actual code in the repo.
+- Some repos have no `METADATA` file at all (~20%)
+- Some reference a GitHub URL but provide only a commit hash, not a release tag (~20%)
+- Some list a CPE (Common Platform Enumeration) identifier but no source URL (~8%)
+- Some contain stale or incorrect version information that no longer matches the actual code in the repo (~5%)
 
 This means there is no single reliable method to determine the upstream source and version of every external repo. Different scan modes exist to apply progressively deeper inspection strategies according to requirements.
 
