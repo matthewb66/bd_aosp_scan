@@ -1,6 +1,6 @@
 # Black Duck SCA AOSP scan utility - bd_aosp_scan v0.17
 
-Creates a Black Duck SCA project version from AOSP (Android Open Source Project) build artifacts. Platform repos and external third-party packages are uploaded separately, each with their own matching strategy; Custom (Black Duck) components can be created where upstream OSS packages cannot be identified, with CPE specified to map CVEs where available.
+Creates a Black Duck SCA project version from AOSP (Android Open Source Project) build artifacts. Platform repos and external third-party packages are uploaded as component IDs via SPDX SBOM separately, each with their own matching strategy; Custom (Black Duck) components can optionally be created where upstream OSS packages cannot be identified, with CPE specified to map CVEs where available.
 
 Black Duck SCA 2026.7 provides new capabilities to provide a CPE for custom components for 3rd party vulnerability reporting. Ensure you are using this version for complete vulnerability identification and reporting.
 
@@ -21,16 +21,16 @@ Android Security Bulletins are provided by Google referencing CVEs but all are c
 
 A complete BOM of the built packages is the optimal outcome – optionally creating Custom Components (with CPEs associated and appropriate licences) for unmatched packages. Unbuilt packages will not be included in the BOM.
 
-Standard AOSP packages have no vulnerabilities reported (as none exist). If custom components are created for unmatched AOSP standard packages, they will have Apache-2.0 license.
+Standard AOSP packages have no vulnerabilities reported (as none exist). If custom components are created for unmatched AOSP standard packages, they will have the Apache-2.0 licence.
 
-A Google/Android custom component can optionally be created to show CVEs reported in the Android Security Bulletins (requires BD-SCA 2026.7 or later).
+A master Google/Android custom component can optionally be created to show CVEs reported in the Android Security Bulletins (requires BD-SCA 2026.7 or later).
 
-The primary assumption is that determining up-stream origins for licence and vulnerability identification will add value for external packages. Analysis shows that many packages potentially have unpatched vulnerabilities from the origin OSS package. Furthermore, the origin licence may not agree with the licences reported in the AOSP forks, and deep license analysis may identify embedded and other licences of interest.
+The primary assumption is that determining up-stream origins for licence and vulnerability identification will add value for external packages. Analysis shows that many packages potentially have unpatched vulnerabilities from their origin OSS package. Furthermore, the origin licence may not agree with the licences reported in the AOSP forks, and deep licence analysis may identify embedded and other licences of interest.
 
 External packages can optionally be scanned:
 -	Using the upstream origin as component ID where identifiable
 -	By looking up CPEs in the BD KB to find associated components
--	By creating custom components for unmatched components with CPE where available (and licences from the source repo configuration)
+-	By creating custom components for unmatched components with CPE where available (extracting licences from the source repo configuration)
 -	By Signature scanning where no other identification is successful.
 
 Custom Components are global, so once created they can change the scan result for subsequent scans. Care should be used when creating custom components (the scan script does not create them by default)
@@ -42,7 +42,7 @@ AOSP incorporates hundreds of third-party open-source projects under `external/`
 In practice, many of these `METADATA` files are missing, incomplete, or inaccurate:
 
 - Some repos have no `METADATA` file at all (~20%)
-- Some reference a GitHub URL but provide only a commit hash, not a release tag (~20%)
+- Some reference a GitHub URL but provide only a commit hash, not a release tag (~40%)
 - Some list a CPE (Common Platform Enumeration) identifier but no source URL (~8%)
 - Some contain stale or incorrect version information that no longer matches the actual code in the repo (~5%)
 
@@ -54,9 +54,9 @@ Mapping each forked external repo back to its original upstream project is criti
 
 - **Vulnerability detection beyond the Android Security Bulletin.** The Android Security Bulletin covers vulnerabilities found and patched within AOSP itself, but upstream projects may have disclosed CVEs that are not yet addressed in the AOSP fork. Associating each repo with its upstream component in the Black Duck KnowledgeBase enables continuous monitoring for these vulnerabilities.
 
-- **License validation.** AOSP repos contain `NOTICE` and license classification files, but these may not reflect the full licensing terms of the upstream project. Identifying the upstream source allows Black Duck to perform deep license and copyright detection against the original project, validating that the license declarations in the AOSP repo are complete and accurate.
+- **licence validation.** AOSP repos contain `NOTICE` and licence classification files, but these may not reflect the full licencing terms of the upstream project. Identifying the upstream source allows Black Duck to perform deep licence and copyright detection against the original project, validating that the licence declarations in the AOSP repo are complete and accurate.
 
-- **License compliance.** Some upstream projects use licenses with specific obligations (attribution, source disclosure, copyleft). Accurate upstream identification ensures these obligations are tracked and met.
+- **licence compliance.** Some upstream projects use licences with specific obligations (attribution, source disclosure, copyleft). Accurate upstream identification ensures these obligations are tracked and met.
 
 ## Prerequisites
 
@@ -222,12 +222,6 @@ repo list > repo-list.txt
 
 ### module-info.json
 
-Build the AOSP target, then locate `module-info.json`:
+Build the AOSP target, then locate `module-info.json`.
 
-```bash
-source build/envsetup.sh
-lunch <target>
-make -j$(nproc)
-```
-
-The file is typically at `out/target/product/<device>/module-info.json`.
+The file is typically created in the location `out/target/product/<device>/module-info.json`.
